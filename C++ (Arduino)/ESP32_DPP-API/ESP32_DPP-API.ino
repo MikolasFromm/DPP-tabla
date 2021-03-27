@@ -1,17 +1,9 @@
-#include <ArduinoHttpClient.h>
-#include <b64.h>
-#include <HttpClient.h>
-
+#include <HTTPClient.h>
 #include <ArduinoJson.h>
-
-
 #include <Arduino_JSON.h>
 #include <JSON.h>
 #include <JSONVar.h>
-
 #include <WiFi.h>
-
-#define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
 
 const char* SSID = "OK1-BBTP50";
 const char* PASS = "MikuljeBUH";
@@ -21,12 +13,14 @@ const String myAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sY
 const String ContentType = "application/json; charset=utf-8";
 
 unsigned long lastTime = 0;
-unsigned long timerDelay = 10000;
+unsigned long timerDelay = 30000;
 
-String API_DATA;
+const int limit = 4;
 
-int limit = 4;
-String limit_string = String(limit);
+const char* line[limit] = {};
+const char* time_predicted[limit] = {};
+const char* final_stop[limit] = {};
+
 
 void setup()
 {
@@ -55,7 +49,7 @@ void loop()
             
       HTTPClient http;
 
-      String serverConditions = "?minutesBefore=10&minutesAfter=60&names=Sl%C3%A1nsk%C3%A1&preferredTimezone=Europe%2FPrague&limit=" + limit_string;
+      String serverConditions = "?minutesBefore=10&minutesAfter=60&names=Sl%C3%A1nsk%C3%A1&preferredTimezone=Europe%2FPrague&limit=" + String(limit);
       String serverPath = serverName + serverConditions;
               
       http.begin(serverPath.c_str());
@@ -79,35 +73,44 @@ void loop()
         return;
       }
       
-      for (JsonObject elem : doc.as<JsonArray>()) 
+      for(int i = 0; i < limit; i++)
       {
-      
-        const char* arrival_timestamp_predicted = elem["arrival_timestamp"]["predicted"];
-        const char* arrival_timestamp_scheduled = elem["arrival_timestamp"]["scheduled"];
-      
-        JsonObject delay = elem["delay"];
-        bool delay_is_available = delay["is_available"]; // false, false, false, false
-        // delay["minutes"] is null
-        // delay["seconds"] is null
-      
-        const char* departure_timestamp_predicted = elem["departure_timestamp"]["predicted"];
-        const char* departure_timestamp_scheduled = elem["departure_timestamp"]["scheduled"];
-      
-        const char* route_short_name = elem["route"]["short_name"]; // "98", "98", "98", "98"
-        const char* route_type = elem["route"]["type"]; // "0", "0", "0", "0"
-      
-        JsonObject stop = elem["stop"];
-        const char* stop_id = stop["id"]; // "U236Z1P", "U236Z2P", "U236Z1P", "U236Z2P"
-        const char* stop_name = stop["name"]; // "Slánská", "Slánská", "Slánská", "Slánská"
-        const char* stop_platform_code = stop["platform_code"]; // "A", "B", "A", "B"
-        int stop_wheelchair_boarding = stop["wheelchair_boarding"]; // 1, 1, 1, 1
-      
-        JsonObject trip = elem["trip"];
-        const char* trip_headsign = trip["headsign"]; // "Spojovací", "Sídliště Řepy", "Spojovací", "Sídliště ...
-        const char* trip_id = trip["id"]; // "98_42_210131", "98_53_210306", "98_48_210131", "98_57_210306"
-        // trip["is_canceled"] is null
-        int trip_is_wheelchair_accessible = trip["is_wheelchair_accessible"]; // 2, 2, 2, 2
-        Serial.print(arrival_timestamp_predicted[0]);
+
+        JsonObject root = doc[i];
+
+        const char* root_arrival_timestamp_predicted = root["arrival_timestamp"]["predicted"];
+        const char* root_arrival_timestamp_scheduled = root["arrival_timestamp"]["scheduled"];
+
+        JsonObject root_delay = root["delay"];
+        bool root_delay_is_available = root_delay["is_available"]; // true
+        int root_delay_minutes = root_delay["minutes"]; // 2
+        int root_delay_seconds = root_delay["seconds"]; // 134
+
+        const char* root_departure_timestamp_predicted = root["departure_timestamp"]["predicted"];
+        const char* root_departure_timestamp_scheduled = root["departure_timestamp"]["scheduled"];
+
+        const char* root_route_short_name = root["route"]["short_name"]; // "225"
+        const char* root_route_type = root["route"]["type"]; // "3"
+
+        JsonObject root_stop = root["stop"];
+        const char* root_stop_id = root_stop["id"]; // "U236Z4P"#include <b64.h>
+        const char* root_stop_name = root_stop["name"]; // "Slánská"
+        const char* root_stop_platform_code = root_stop["platform_code"]; // "D"
+        int root_stop_wheelchair_boarding = root_stop["wheelchair_boarding"]; // 0
+
+        JsonObject root_trip = root["trip"];
+        const char* root_trip_headsign = root_trip["headsign"]; // "Velká Ohrada"
+        const char* root_trip_id = root_trip["id"]; // "225_277_210101"
+        bool root_trip_is_canceled = root_trip["is_canceled"]; // false
+        int root_trip_is_wheelchair_accessible = root_trip["is_wheelchair_accessible"]; // 1
+
+        Serial.print(root_route_short_name);
+        Serial.print(" ");
+        Serial.print(root_trip_headsign);
+        Serial.print(" ");
+        Serial.println(root_arrival_timestamp_predicted);
+        
+
       }
 
       lastTime = millis();
