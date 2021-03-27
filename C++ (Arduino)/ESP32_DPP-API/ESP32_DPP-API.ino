@@ -51,7 +51,7 @@ void loop()
             
       HTTPClient http;
 
-      String serverConditions = "?minutesAfter=60&names=Sl%C3%A1nsk%C3%A1&preferredTimezone=Europe%2FPrague&limit=" + String(limit);
+      String serverConditions = "?minutesAfter=60&names=And%C4%9Bl&preferredTimezone=Europe%2FPrague&orderBySchedule=true&limit=" + String(limit);
       String serverPath = serverName + serverConditions;
               
       http.begin(serverPath.c_str());
