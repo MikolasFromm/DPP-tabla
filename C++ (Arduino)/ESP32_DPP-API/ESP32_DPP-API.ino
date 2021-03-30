@@ -58,7 +58,7 @@ void loop()
   int hour_real = timeinfo.tm_hour;
   int minute_real = timeinfo.tm_min;
   int second_real = timeinfo.tm_sec;
-  
+
       if (WiFi.status() == WL_CONNECTED)
         {
 
@@ -113,7 +113,7 @@ void loop()
               int hour_predicted_int = hour_predicted_string.toInt();
               int minute_predicted_int = minute_predicted_string.toInt();
               int second_predicted_int = second_predicted_string.toInt();
-              
+
               Serial.print(line);
               Serial.print(" - ");
               Serial.print(final_stop);
@@ -132,10 +132,10 @@ void loop()
               tft.setTextDatum(ML_DATUM);
               tft.setTextColor(TFT_WHITE, TFT_BLACK);
               tft.setTextSize(2);
-              tft.setTextPadding(50);              
+              tft.setTextPadding(50);
               tft.drawString(line, 5, ((23 * i) + 15), 1);
               tft.setTextSize(1);
-              tft.setTextPadding(150);  
+              tft.setTextPadding(150);
               tft.drawString(final_stop, 50, ((23 * i) + 15), 1);
               tft.setTextSize(2);
               tft.setTextDatum(MR_DATUM);
@@ -194,7 +194,7 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
           min_remain = min_dep + 60 - min_now; //Převod do stejné hodiny, ale s časem > 60min
 
           if((sec_dep - sec_now) > 0)
-            { 
+            {
               int sec_remain = sec_dep - sec_now;
               min_remain = min_remain + (sec_remain / 60);
             }
@@ -227,6 +227,6 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
     {
       min_remain = min_remain + delay;
     }
-    
+
     return min_remain;
   }
