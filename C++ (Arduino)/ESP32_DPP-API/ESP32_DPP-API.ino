@@ -6,8 +6,13 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
+<<<<<<< HEAD
 const char* SSID = "I@home";
 const char* PASS = "Skakal pes, pres oves, pres zelenou louku.";
+=======
+const char* SSID = "SSID";
+const char* PASS = "PASSWD";
+>>>>>>> 1a5675542eb166fc29651c757269caaf75fd7410
 
 String serverName = "https://api.golemio.cz/v2/departureboards/";
 const String myAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjE2MjcxMzg4LCJleHAiOjExNjE2MjcxMzg4LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZWFhM2EyMjktOWM2MS00OTU2LWE4NmUtNzM0MTVkMTdmZmU5In0.qMwNTzyjMjGJ6wk9S_EAh00up1b8o2ibrdnHj3MRjz4";
@@ -58,7 +63,11 @@ void loop()
   int hour_real = timeinfo.tm_hour;
   int minute_real = timeinfo.tm_min;
   int second_real = timeinfo.tm_sec;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 1a5675542eb166fc29651c757269caaf75fd7410
       if (WiFi.status() == WL_CONNECTED)
         {
 
@@ -113,7 +122,11 @@ void loop()
               int hour_predicted_int = hour_predicted_string.toInt();
               int minute_predicted_int = minute_predicted_string.toInt();
               int second_predicted_int = second_predicted_string.toInt();
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> 1a5675542eb166fc29651c757269caaf75fd7410
               Serial.print(line);
               Serial.print(" - ");
               Serial.print(final_stop);
@@ -132,10 +145,17 @@ void loop()
               tft.setTextDatum(ML_DATUM);
               tft.setTextColor(TFT_WHITE, TFT_BLACK);
               tft.setTextSize(2);
+<<<<<<< HEAD
               tft.setTextPadding(50);              
               tft.drawString(line, 5, ((23 * i) + 15), 1);
               tft.setTextSize(1);
               tft.setTextPadding(150);  
+=======
+              tft.setTextPadding(50);
+              tft.drawString(line, 5, ((23 * i) + 15), 1);
+              tft.setTextSize(1);
+              tft.setTextPadding(150);
+>>>>>>> 1a5675542eb166fc29651c757269caaf75fd7410
               tft.drawString(final_stop, 50, ((23 * i) + 15), 1);
               tft.setTextSize(2);
               tft.setTextDatum(MR_DATUM);
@@ -194,7 +214,11 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
           min_remain = min_dep + 60 - min_now; //Převod do stejné hodiny, ale s časem > 60min
 
           if((sec_dep - sec_now) > 0)
+<<<<<<< HEAD
             { 
+=======
+            {
+>>>>>>> 1a5675542eb166fc29651c757269caaf75fd7410
               int sec_remain = sec_dep - sec_now;
               min_remain = min_remain + (sec_remain / 60);
             }
@@ -227,6 +251,10 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
     {
       min_remain = min_remain + delay;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 1a5675542eb166fc29651c757269caaf75fd7410
     return min_remain;
   }
