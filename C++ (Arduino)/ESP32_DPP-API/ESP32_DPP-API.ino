@@ -1,13 +1,13 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <Arduino_JSON.h>
-#include <JSON.h>
-#include <JSONVar.h>
 #include <WiFi.h>
 #include <time.h>
+#include <TFT_eSPI.h>
 
-const char* SSID = "OK1-BBTP50";
-const char* PASS = "MikuljeBUH";
+TFT_eSPI tft = TFT_eSPI();
+
+const char* SSID = "I@home";
+const char* PASS = "Skakal pes, pres oves, pres zelenou louku.";
 
 String serverName = "https://api.golemio.cz/v2/departureboards/";
 const String myAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjE2MjcxMzg4LCJleHAiOjExNjE2MjcxMzg4LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZWFhM2EyMjktOWM2MS00OTU2LWE4NmUtNzM0MTVkMTdmZmU5In0.qMwNTzyjMjGJ6wk9S_EAh00up1b8o2ibrdnHj3MRjz4";
@@ -36,6 +36,10 @@ void setup()
   Serial.println("");
   Serial.println("Connected to WiFi");
 
+  tft.init();
+  tft.setRotation(1);
+  tft.fillScreen(TFT_BLACK);
+
 }
 
 
@@ -51,12 +55,6 @@ void loop()
     return;
   }
 
-  /* Serial.println(&timeinfo, "%H:%M:%S");
-
-  strftime(Hour,3, "%H", &timeinfo);
-  strftime(Minute,3, "%M", &timeinfo);
-  strftime(Second,3, "%S", &timeinfo);
- */
   int hour_real = timeinfo.tm_hour;
   int minute_real = timeinfo.tm_min;
   int second_real = timeinfo.tm_sec;
@@ -121,6 +119,7 @@ void loop()
               Serial.print(final_stop);
               Serial.print(" - ");
               int min_remain = time_compar(hour_real, minute_real, second_real, hour_predicted_int, minute_predicted_int, second_predicted_int, root_delay_minutes);
+              int min_delay = root_delay_minutes;
               if(min_remain < 1)
                 {
                   Serial.println(" <1min");
@@ -129,11 +128,41 @@ void loop()
                   Serial.print(min_remain);
                 Serial.println(" min");
               }
-              
+
+              tft.setTextDatum(ML_DATUM);
+              tft.setTextColor(TFT_WHITE, TFT_BLACK);
+              tft.setTextSize(2);
+              tft.setTextPadding(50);              
+              tft.drawString(line, 5, ((23 * i) + 15), 1);
+              tft.setTextSize(1);
+              tft.setTextPadding(150);  
+              tft.drawString(final_stop, 50, ((23 * i) + 15), 1);
+              tft.setTextSize(2);
+              tft.setTextDatum(MR_DATUM);
+              if(min_remain < 1){
+                tft.setTextColor(TFT_BLACK, TFT_ORANGE);
+                tft.setTextPadding(60);
+                tft.drawString("<1 min", 240, ((23 * i) + 15), 1);
+              }
+              else{
+                if(min_delay >= 1)
+                {
+                  tft.setTextColor(TFT_RED, TFT_BLACK);
+                }
+                if (min_delay < 1)
+                {
+                  tft.setTextColor(TFT_GREEN, TFT_BLACK);
+                }
+                tft.setTextPadding(80);
+                tft.drawString(String(min_remain) + " min", 240, ((23 * i) + 15), 1);
+
+              }
             }
+            tft.setTextPadding(0);
             Serial.println("");
-              http.end();
-              payload.remove(0);
+
+            http.end();
+            payload.remove(0);
         }
 }
 
@@ -148,28 +177,14 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
         if((sec_dep - sec_now) > 0)
           {
             int sec_remain = sec_dep - sec_now;
-            if(sec_remain > 30)
-            {
-              min_remain++;
-            }
-            if(sec_remain < 30)
-            {
-              min_remain--;
-            }
+            min_remain = min_remain + (sec_remain / 60);
           }
 
         if((sec_dep - sec_now) < 0) //Pokud je sekunda odjezdu menší než aktuálního
           {
             int sec_remain = sec_dep + 60 - sec_now; //Převod sekundy na nižší minutu, ale s časem > 60sec
             min_remain--; //Odečtení jedné minuty
-            if(sec_remain > 30)
-              {
-                min_remain++;
-              }
-            if(sec_remain < 30)
-              {
-                min_remain--;
-              }
+            min_remain = min_remain + (sec_remain / 60);
           }
       }
 
@@ -181,28 +196,14 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
           if((sec_dep - sec_now) > 0)
             { 
               int sec_remain = sec_dep - sec_now;
-              if(sec_remain > 30)
-                {
-                  min_remain++;
-                }
-              if(sec_remain < 30)
-                {
-                  min_remain--;
-                }
+              min_remain = min_remain + (sec_remain / 60);
             }
 
           if((sec_dep - sec_now) < 0) //Pokud je sekunda odjezdu menší než aktuálního
           {
             int sec_remain = sec_dep + 60 - sec_now; //Převod sekundy na nižší minutu, ale s časem > 60sec
             min_remain--; //Odečtení jedné minuty
-            if(sec_remain > 30)
-              {
-                min_remain++;
-              }
-            if(sec_remain < 30)
-              {
-                min_remain--;
-              }
+            min_remain = min_remain + (sec_remain / 60);
           }
         }
     if((hour_dep - hour_now) == 0) //Pokud je hodina odjezdu až ve stejné hodině
@@ -212,30 +213,20 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
         if((sec_dep - sec_now) > 0)
           {
             int sec_remain = sec_dep - sec_now;
-            if(sec_remain > 30)
-            {
-              min_remain++;
-            }
-            if(sec_remain < 30)
-            {
-              min_remain--;
-            }
+            min_remain = min_remain + (sec_remain / 60);
           }
 
         if((sec_dep - sec_now) < 0) //Pokud je sekunda odjezdu menší než aktuálního
           {
             int sec_remain = sec_dep + 60 - sec_now; //Převod sekundy na nižší minutu, ale s časem > 60sec
             min_remain--; //Odečtení jedné minuty
-            if(sec_remain > 30)
-              {
-                min_remain++;
-              }
-            if(sec_remain < 30)
-              {
-                min_remain--;
-              }
+            min_remain = min_remain + (sec_remain / 60);
           }
       }
-    min_remain = min_remain + delay;
+    if(delay > 0)
+    {
+      min_remain = min_remain + delay;
+    }
+    
     return min_remain;
   }
