@@ -4,6 +4,7 @@
 #include <time.h>
 #include <TFT_eSPI.h>
 #include "Free_Fonts.h"
+#include "setup.h"
 
 
 TFT_eSPI tft = TFT_eSPI();
@@ -11,8 +12,8 @@ TFT_eSPI tft = TFT_eSPI();
 int width = 320; //RESOLUTION
 int height = 240; //RESOLUTION
 
-const char* SSID = "OK1-BBTP50"; //WIFI-NAME
-const char* PASS = "MikuljeBUH"; //WIFI-PASS
+const char* SSID = WIFI_NAME; //specified in setup.h
+const char* PASS = WIFI_PASS; //specified in setup.h
 
 String serverName = "https://api.golemio.cz/v2/departureboards/"; //DATA-SERVER
 const String myAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjE2MjcxMzg4LCJleHAiOjExNjE2MjcxMzg4LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZWFhM2EyMjktOWM2MS00OTU2LWE4NmUtNzM0MTVkMTdmZmU5In0.qMwNTzyjMjGJ6wk9S_EAh00up1b8o2ibrdnHj3MRjz4";
