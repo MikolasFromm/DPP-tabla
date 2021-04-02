@@ -83,7 +83,7 @@ void wifi_tft_setup()
     Serial.begin(115200);
 
     tft.init();
-    tft.setRotation(1);
+    tft.setRotation(3);
     tft.fillScreen(TFT_BLACK);
 
     WiFi.begin(SSID, PASS);
@@ -203,7 +203,7 @@ void JSONprint(void * parameter)
       tft.setTextSize(3);
       tft.setTextPadding(60);              
       tft.drawString(line[i], 5, ((43 * i) + 30), 1);
-      tft.setTextSize(2);
+      tft.setTextSize(1);
       tft.setTextPadding(180);
       tft.setTextColor(TFT_DARKGREY, TFT_BLACK);  
       tft.drawString(final_stop[i], 70, ((43 * i) + 30), 1);
