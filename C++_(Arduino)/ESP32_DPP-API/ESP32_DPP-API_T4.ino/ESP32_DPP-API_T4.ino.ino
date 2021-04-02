@@ -212,8 +212,8 @@ void JSONprint(void * parameter)
       if(min_remain < 1)
         {
           tft.setTextColor(TFT_BLACK, TFT_ORANGE);
-          tft.setTextPadding(70);
-          tft.drawString("<1 min", 320, ((43 * i) + 30), 1);
+          tft.setTextPadding(50);
+          tft.drawString("<1", 280, ((43 * i) + 30), 1);
         }
       else{
         if(min_delay[i] >= 1)
@@ -224,10 +224,14 @@ void JSONprint(void * parameter)
         {
           tft.setTextColor(TFT_GREEN, TFT_BLACK);
         }
-        tft.setTextPadding(80);
-        tft.drawString(String(min_remain) + " min", 320, ((43 * i) + 30), 1);
+        tft.setTextPadding(50);
+        tft.drawString(String(min_remain), 280, ((43 * i) + 30), 1);
   
       }
+      tft.setTextSize(1);
+      tft.setTextDatum(BR_DATUM);
+      tft.setTextPadding(30);
+      tft.drawString(" min", 320, ((43 * i) + 37), 1);
       tft.setTextPadding(0);
     }
     delay(1000);
