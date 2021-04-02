@@ -3,7 +3,6 @@
 #include <WiFi.h>
 #include <time.h>
 #include <TFT_eSPI.h>
-#include "Free_Fonts.h"
 #include "setup.h"
 
 
@@ -239,6 +238,26 @@ void JSONprint(void * parameter)
 int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_dep, int sec_dep, int delay)
   {
     int min_remain;
+
+     {
+        if((hour_dep - hour_now) < 0) //Pokud je hodina odjezdu až ve vyšší hodině
+          {
+            min_remain = min_dep + (60 * (hour_dep - hour_now) + 24) - min_now; //Převod do stejné hodiny, ale s časem > 60min
+    
+            if((sec_dep - sec_now) > 0)
+              {
+                int sec_remain = sec_dep - sec_now;
+                min_remain = min_remain + (sec_remain / 60);
+              }
+    
+            if((sec_dep - sec_now) < 0) //Pokud je sekunda odjezdu menší než aktuálního
+              {
+                int sec_remain = sec_dep + 60 - sec_now; //Převod sekundy na nižší minutu, ale s časem > 60sec
+                min_remain--; //Odečtení jedné minuty
+                min_remain = min_remain + (sec_remain / 60);
+              }
+          }
+     }
 
      for(int i = 0; i < 10; i++)
      {

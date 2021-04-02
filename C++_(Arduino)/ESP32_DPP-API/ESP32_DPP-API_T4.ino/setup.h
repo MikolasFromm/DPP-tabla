@@ -3,9 +3,9 @@
 #define SETUP_H
 
 // TODO fill in your wifi name
-#define WIFI_NAME "-_-"
+#define WIFI_NAME "I@home"
 
 // TODO fill in your wifi password
-#define WIFI_PASS "Brdy>Prdy...2020"
+#define WIFI_PASS "Skakal pes, pres oves, pres zelenou louku."
 
 #endif /* SETUP_H */
