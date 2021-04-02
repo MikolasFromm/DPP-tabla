@@ -2,10 +2,10 @@
 #ifndef SETUP_H
 #define SETUP_H
 
-// TODO fill in your wifi name
-#define WIFI_NAME "-_-"
+// TODO fill your wifi name into quotation marks
+#define WIFI_NAME ""
 
-// TODO fill in your wifi password
-#define WIFI_PASS "Brdy>Prdy...2020"
+// TODO fill your wifi password into quotation marks
+#define WIFI_PASS ""
 
 #endif /* SETUP_H */
