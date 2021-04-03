@@ -98,6 +98,10 @@ void wifi_tft_setup()
   delay(2000);
   tft.fillScreen(TFT_BLACK);
 
+  u8f.setFont(u8g2_font_helvB12_te);
+  u8f.setFontMode(1); 
+  u8f.setFontDirection(0);
+  u8f.setForegroundColor(TFT_WHITE);
 
 }
 
@@ -108,8 +112,22 @@ void JSONread(void * parameter)
   }
 }
 
+void init_str_buffer(String buffer[])
+{
+  for (int i = 0; i < limit; i++)\
+  {
+    buffer[i] = "";
+  }
+}
+
 void JSONprint(void * parameter)
 {
+  String old_final_stops_short[limit];
+  String old_line[limit];
+
+  init_str_buffer(old_final_stops_short);
+  init_str_buffer(old_line);
+  
   for (;;)
   {
 
@@ -194,20 +212,22 @@ void JSONprint(void * parameter)
 
 
         int min_remain = time_compar(hour_now, min_now, sec_now, hour_predicted, min_predicted, sec_predicted, min_delay);
-  
-        u8f.setFont(u8g2_font_helvB12_te);
-        u8f.setFontMode(1); 
-        u8f.setFontDirection(0);
-        u8f.setForegroundColor(TFT_WHITE);
 
-        u8f.setCursor(5, ((43 * i) + 30));
-        tft.fillRect(5, ((43 * i) + 12), 50, 25, TFT_BLACK);
-        u8f.print(line);
-
-        u8f.setCursor(70, ((43 * i) + 30));
+        if (old_line[i] != line)
+        {
+          u8f.setCursor(5, ((43 * i) + 30));
+          tft.fillRect(5, ((43 * i) + 12), 50, 25, TFT_BLACK);
+          u8f.print(line);
+          old_line[i] = line;
+        }
         
-        tft.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
-        u8f.print(final_stop_short);
+        if (old_final_stops_short[i] != final_stop_short)
+        {
+          u8f.setCursor(70, ((43 * i) + 30));
+          tft.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
+          u8f.print(final_stop_short);
+          old_final_stops_short[i] = final_stop_short;       
+        }
 
         tft.setTextSize(2);
         tft.setTextDatum(MR_DATUM);
