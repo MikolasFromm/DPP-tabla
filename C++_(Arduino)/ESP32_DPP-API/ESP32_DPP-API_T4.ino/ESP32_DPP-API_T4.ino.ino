@@ -75,7 +75,7 @@ void wifi_tft_setup()
   tft.init();
   tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
-  u8f.begin(tft); 
+  u8f.begin(tft);
 
   WiFi.begin(SSID, PASS);
   Serial.println("Connecting");
@@ -98,7 +98,7 @@ void wifi_tft_setup()
   delay(2000);
   tft.fillScreen(TFT_BLACK);
 
-  u8f.setFontMode(1); 
+  u8f.setFontMode(1);
   u8f.setFontDirection(0);
   u8f.setForegroundColor(TFT_WHITE);
 
@@ -126,7 +126,7 @@ void JSONprint(void * parameter)
 
   init_str_buffer(old_final_stops_short);
   init_str_buffer(old_line);
-  
+
   for (;;)
   {
 
@@ -147,8 +147,8 @@ void JSONprint(void * parameter)
 
       HTTPClient http;
 
-      //String serverConditions = "?ids=U236Z1P&ids=U236Z4P&limit=" + String(limit);
-      String serverConditions = "?names=And%C4%9Bl&limit=" + String(limit);
+      String serverConditions = "?ids=U236Z1P&ids=U236Z4P&limit=" + String(limit);
+      //String serverConditions = "?names=And%C4%9Bl&limit=" + String(limit);
       String serverPath = serverName + serverConditions;
 
       http.begin(serverPath.c_str());
@@ -227,14 +227,14 @@ void JSONprint(void * parameter)
           u8f.print(line);
           old_line[i] = line;
         }
-        
+
         if (old_final_stops_short[i] != final_stop_short)
         {
           u8f.setFont(u8g2_font_helvB12_te);
           u8f.setCursor(70, ((43 * i) + 30));
           tft.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
           u8f.print(final_stop_short);
-          old_final_stops_short[i] = final_stop_short;       
+          old_final_stops_short[i] = final_stop_short;
         }
 
         tft.setTextSize(2);
@@ -269,14 +269,14 @@ void JSONprint(void * parameter)
   }
 }
 
-int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_dep, int sec_dep, int delay)
+int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_dep, int sec_dep, int time_delay)
 {
   int min_remain;
 
   {
     if ((hour_dep - hour_now) < 0) //Pokud je hodina odjezdu až ve vyšší hodině
     {
-      min_remain = min_dep + (60 * (hour_dep - hour_now) + 24) - min_now; //Převod do stejné hodiny, ale s časem > 60min
+      min_remain = min_dep + (60 * ((hour_dep - hour_now) + 24)) - min_now; //Převod do stejné hodiny, ale s časem > 60min
 
       if ((sec_dep - sec_now) > 0)
       {
@@ -333,9 +333,9 @@ int time_compar(int hour_now, int min_now, int sec_now, int hour_dep, int min_de
     }
   }
 
-  if (delay > 0)
+  if (time_delay > 0)
   {
-    min_remain = min_remain + delay;
+    min_remain = min_remain + time_delay;
   }
 
   return min_remain;
