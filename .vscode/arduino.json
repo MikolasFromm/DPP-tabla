@@ -1,0 +1,7 @@
+{
+    "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=40,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
+    "board": "esp32:esp32:esp32",
+    "port": "COM8",
+    "sketch": "C++_(Arduino)/ESP32_DPP-API/ESP32_DPP-API_T4.ino/ESP32_DPP-API_T4.ino.ino",
+    "output": "../ArduinoOutput"
+}
