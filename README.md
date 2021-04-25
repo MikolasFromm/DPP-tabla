@@ -1,5 +1,7 @@
 # DPP-tabla
 
+![alt text](https://www.vsechnobu.de/wp-content/uploads/2021/04/IMG_20210424_0936395.jpg "DPP TABLO")
+
 Odjezdové tabule DPP, pracující s RealTime daty z pražského datového projektu Golemio.
 
 Projekt je stále ve vývoji, přesto jeho základní funckionality jsou již naplněny.
@@ -11,8 +13,10 @@ Aktuální data jsou získávána pomocí pražské open-data API banky [GOLEMIO
 ## INSTALACE
 
 1. Vytvoříme kopii souboru `template_setup.h` pojmenovanou **`setup.h`**, do které budeme následně zapisovat jednotlivé údaje.
-2. Vytvoříme vlastní účet a unikátní API klíč zde: https://api.golemio.cz/api-keys/ Nazpět získáme **`X-header-token`**, který je naším API klíčem pro použití v programu. Ten zapíšeme do `setup.h` souboru namísto **`"X-HEADER-TOKEN"`**. (zachovat uvozovky na začátku a konci stringu!!)
-3. Zvolíme si vlastní podobu requestu, resp. vlastní zastávku, popřípadě vlastní zastávkový sloupek, pro který chceme data zobrazovat, zde: https://golemioapi.docs.apiary.io/#reference/public-transport/departure-boards/get-departure-board?console=1 V sekci URI parameters si zvolí svou podobu requestu - v našem případě pouze names zastávky, tedy např. takto:
+2. Vytvoříme vlastní účet a unikátní API klíč zde: https://api.golemio.cz/api-keys/ 
+Nazpět získáme **`X-header-token`**, který je naším API klíčem pro použití v programu.
+Ten zapíšeme do `setup.h` souboru namísto **`"X-HEADER-TOKEN"`**. (zachovat uvozovky na začátku a konci stringu!!)
+3. Zvolíme si vlastní podobu requestu, resp. vlastní zastávku, popřípadě vlastní zastávkový sloupek, pro který chceme data zobrazovat, zde: https://golemioapi.docs.apiary.io/#reference/public-transport/departure-boards/get-departure-board?console=1 V sekci **`URI parameters`** si zvolíme svou podobu requestu - v našem případě pouze _names_ zastávky, tedy např. takto:
 
 ![alt text](https://www.vsechnobu.de/wp-content/uploads/2021/04/Volba-zastavky.png "Ukázka nastavení zastávky")
 
@@ -123,7 +127,7 @@ Program má několik základních funckionalit:
 
 Program je volně dostupný pro každého, přesto autor neručí za žádný spoj, který nebyl dostihnut kvůli chybnému zobrazení.
 
-## TODO
+## TO-DO
 
 V budoucnu je možné do programu doplnit:
 

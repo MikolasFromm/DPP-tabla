@@ -19,8 +19,12 @@ const char* SSID = WIFI_NAME; //specified in setup.h
 const char* PASS = WIFI_PASS; //specified in setup.h
 
 String serverName = "https://api.golemio.cz/v2/departureboards/"; //DATA-SERVER
-const String myAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjE2MjcxMzg4LCJleHAiOjExNjE2MjcxMzg4LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZWFhM2EyMjktOWM2MS00OTU2LWE4NmUtNzM0MTVkMTdmZmU5In0.qMwNTzyjMjGJ6wk9S_EAh00up1b8o2ibrdnHj3MRjz4";
+const String myAPI = X_HEADER_TOKEN;
 const String ContentType = "application/json; charset=utf-8"; //CONTENT-SPECIFICATION
+const String Zastavka = ZASTAVKA_CELA;
+const String Sloupek = ZASTAVKOVY_SLOUPEK;
+String serverConditions;
+String serverPath;
 
 const int limit = 5; //LIMIT-OF-OBJECTS
 
@@ -36,6 +40,8 @@ void setup()
 {
 
   wifi_tft_setup();
+
+  input_data_check();
 
   // DUAL-CORE INIT
 
@@ -104,6 +110,29 @@ void wifi_tft_setup()
 
 }
 
+void input_data_check()
+{
+  if (Zastavka == NULL)
+  {
+    serverConditions = "?" + Sloupek + "&limit=" + String(limit);
+    serverPath = serverName + serverConditions;
+  }
+
+  if (Sloupek == NULL)
+  {
+    serverConditions = "?" + Zastavka + "&limit=" + String(limit);
+    serverPath = serverName + serverConditions;
+  }
+
+  if (Sloupek == NULL && Zastavka == NULL)
+  {
+    u8f.setFont(u8g2_font_helvB12_te);
+    u8f.setCursor(60, 130);
+    u8f.print("Zastávka nebyla určena!");
+    delay(15000);
+  }
+}
+
 void JSONread(void * parameter)
 {
   for (;;)
@@ -147,124 +176,127 @@ void JSONprint(void * parameter)
 
       HTTPClient http;
 
-      String serverConditions = "?ids=U236Z1P&ids=U236Z4P&limit=" + String(limit);
-      //String serverConditions = "?names=And%C4%9Bl&limit=" + String(limit);
-      String serverPath = serverName + serverConditions;
 
       http.begin(serverPath.c_str());
       http.addHeader("x-access-token", myAPI);
       http.addHeader("content-type", ContentType);
 
       int httpResponseCode = http.GET();
-      Serial.println(httpResponseCode);
-      Serial.println("");
-
-      String payload = http.getString();
-      // Serial.println(payload);
-
-
-      DynamicJsonDocument doc(4400);
-
-      DeserializationError error = deserializeJson(doc, payload);
-
-      if (error)
+      if (httpResponseCode == 200)
       {
-        Serial.print(F("deserializeJson() failed: "));
-        Serial.println(error.f_str());
-        return;
-      }
-      for (int i = 0; i < limit; i++)
+        String payload = http.getString();
+        DynamicJsonDocument doc(4400);
+        DeserializationError error = deserializeJson(doc, payload);
+
+        if (error)
+        {
+          Serial.print(F("deserializeJson() failed: "));
+          Serial.println(error.f_str());
+          return;
+        }
+        for (int i = 0; i < limit; i++)
+        {
+
+          JsonObject root = doc[i];
+
+          String root_arrival_timestamp_scheduled = root["arrival_timestamp"]["scheduled"];
+          const char* root_route_short_name = root["route"]["short_name"];
+
+          JsonObject root_delay = root["delay"];
+          int root_delay_minutes = root_delay["minutes"];
+
+          JsonObject root_trip = root["trip"];
+          const char* root_trip_headsign = root_trip["headsign"];
+
+          String hour_predicted_string = root_arrival_timestamp_scheduled.substring(11, 13); // Fixed positions
+          String minute_predicted_string = root_arrival_timestamp_scheduled.substring(14, 16); // Fixed positions
+          String second_predicted_string = root_arrival_timestamp_scheduled.substring(17, 19); // Fixed positions
+
+          String line = root_route_short_name;
+          String final_stop = root_trip_headsign;
+
+          int mezera = final_stop.indexOf(" ");
+          int mezera2 = final_stop.indexOf(" ", mezera + 1);
+          String final_stop_short;
+          if (mezera != -1 && mezera > 4 && final_stop.length() > 18)
+          {
+            final_stop_short = final_stop.substring(0, 4) + ". " + final_stop.substring(mezera + 1);
+            if (final_stop_short.length() > 18 && mezera2 - mezera > 6)
+            {
+              final_stop_short = final_stop.substring(0, 3) + ". " + final_stop.substring(mezera + 1, mezera + 4) + ". " + final_stop.substring(mezera2 + 1);
+            }
+          } else
+          {
+            final_stop_short = final_stop;
+          }
+
+          int hour_predicted = hour_predicted_string.toInt();
+          int min_predicted = minute_predicted_string.toInt();
+          int sec_predicted = second_predicted_string.toInt();
+          int min_delay = root_delay_minutes;
+
+
+          int min_remain = time_compar(hour_now, min_now, sec_now, hour_predicted, min_predicted, sec_predicted, min_delay);
+
+          delay(500);
+
+          if (old_line[i] != line)
+          {
+            u8f.setFont(u8g2_font_helvB18_te);
+            u8f.setCursor(5, ((43 * i) + 30));
+            tft.fillRect(5, ((43 * i) + 5), 50, 30, TFT_BLACK);
+            u8f.print(line);
+            old_line[i] = line;
+          }
+
+          if (old_final_stops_short[i] != final_stop_short)
+          {
+            u8f.setFont(u8g2_font_helvB12_te);
+            u8f.setCursor(70, ((43 * i) + 30));
+            tft.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
+            u8f.print(final_stop_short);
+            old_final_stops_short[i] = final_stop_short;
+          }
+
+          tft.setTextSize(2);
+          tft.setTextDatum(BR_DATUM);
+          if (min_remain < 1)
+          {
+            tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+            tft.setTextPadding(50);
+            tft.drawString("<1", 290, ((43 * i) + 30), 1);
+          }
+          else {
+            if (min_delay >= 1)
+            {
+              tft.setTextColor(TFT_RED, TFT_BLACK);
+            }
+            if (min_delay < 1)
+            {
+              tft.setTextColor(TFT_GREEN, TFT_BLACK);
+            }
+            tft.setTextPadding(45);
+            tft.drawString(String(min_remain), 290, ((43 * i) + 30), 1);
+          }
+
+          tft.setTextSize(1);
+          tft.setTextDatum(BR_DATUM);
+          tft.setTextPadding(25);
+          tft.drawString(" min", 320, ((43 * i) + 30), 1);
+        }
+        payload.remove(0);
+      }else
       {
-
-        JsonObject root = doc[i];
-
-        String root_arrival_timestamp_scheduled = root["arrival_timestamp"]["scheduled"];
-        const char* root_route_short_name = root["route"]["short_name"];
-
-        JsonObject root_delay = root["delay"];
-        int root_delay_minutes = root_delay["minutes"];
-
-        JsonObject root_trip = root["trip"];
-        const char* root_trip_headsign = root_trip["headsign"];
-
-        String hour_predicted_string = root_arrival_timestamp_scheduled.substring(11, 13); // Fixed positions
-        String minute_predicted_string = root_arrival_timestamp_scheduled.substring(14, 16); // Fixed positions
-        String second_predicted_string = root_arrival_timestamp_scheduled.substring(17, 19); // Fixed positions
-
-        String line = root_route_short_name;
-        String final_stop = root_trip_headsign;
-
-        int mezera = final_stop.indexOf(" ");
-        int mezera2 = final_stop.indexOf(" ", mezera + 1);
-        String final_stop_short;
-        if (mezera != -1 && mezera > 4 && final_stop.length() > 18)
-        {
-          final_stop_short = final_stop.substring(0, 4) + ". " + final_stop.substring(mezera + 1);
-          if (final_stop_short.length() > 18 && mezera2 - mezera > 6)
-          {
-            final_stop_short = final_stop.substring(0, 3) + ". " + final_stop.substring(mezera + 1, mezera + 4) + ". " + final_stop.substring(mezera2 + 1);
-          }
-        } else
-        {
-          final_stop_short = final_stop;
-        }
-
-        int hour_predicted = hour_predicted_string.toInt();
-        int min_predicted = minute_predicted_string.toInt();
-        int sec_predicted = second_predicted_string.toInt();
-        int min_delay = root_delay_minutes;
-
-
-        int min_remain = time_compar(hour_now, min_now, sec_now, hour_predicted, min_predicted, sec_predicted, min_delay);
-
-        delay(500);
-
-        if (old_line[i] != line)
-        {
-          u8f.setFont(u8g2_font_helvB18_te);
-          u8f.setCursor(5, ((43 * i) + 30));
-          tft.fillRect(5, ((43 * i) + 5), 50, 30, TFT_BLACK);
-          u8f.print(line);
-          old_line[i] = line;
-        }
-
-        if (old_final_stops_short[i] != final_stop_short)
-        {
-          u8f.setFont(u8g2_font_helvB12_te);
-          u8f.setCursor(70, ((43 * i) + 30));
-          tft.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
-          u8f.print(final_stop_short);
-          old_final_stops_short[i] = final_stop_short;
-        }
-
-        tft.setTextSize(2);
-        tft.setTextDatum(BR_DATUM);
-        if (min_remain < 1)
-        {
-          tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-          tft.setTextPadding(50);
-          tft.drawString("<1", 290, ((43 * i) + 30), 1);
-        }
-        else {
-          if (min_delay >= 1)
-          {
-            tft.setTextColor(TFT_RED, TFT_BLACK);
-          }
-          if (min_delay < 1)
-          {
-            tft.setTextColor(TFT_GREEN, TFT_BLACK);
-          }
-          tft.setTextPadding(45);
-          tft.drawString(String(min_remain), 290, ((43 * i) + 30), 1);
-        }
-
-        tft.setTextSize(1);
-        tft.setTextDatum(BR_DATUM);
-        tft.setTextPadding(25);
-        tft.drawString(" min", 320, ((43 * i) + 30), 1);
+        
+        String error_code = "ERR CODE: " + String(httpResponseCode);
+        tft.setTextPadding(320);
+        tft.setTextColor(TFT_WHITE, TFT_BLACK);
+        tft.setTextDatum(MC_DATUM);
+        tft.setTextSize(4);
+        tft.drawString(error_code, 160, 120, 1);
       }
       http.end();
-      payload.remove(0);
+      
     }
   }
 }
