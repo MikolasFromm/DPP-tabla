@@ -287,13 +287,14 @@ void JSONprint(void * parameter)
         payload.remove(0);
       }else
       {
-        
         String error_code = "ERR CODE: " + String(httpResponseCode);
         tft.setTextPadding(320);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
         tft.setTextSize(4);
         tft.drawString(error_code, 160, 120, 1);
+        delay(10000);
+        tft.fillScreen(TFT_BLACK);
       }
       http.end();
       
