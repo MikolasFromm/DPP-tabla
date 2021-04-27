@@ -182,9 +182,13 @@ void JSONprint(void * parameter)
       http.addHeader("content-type", ContentType);
 
       int httpResponseCode = http.GET();
+      Serial.print("HTTP-CODE: ");
+      Serial.println(httpResponseCode);
       if (httpResponseCode == 200)
       {
         String payload = http.getString();
+        Serial.print("STRING: ");
+        Serial.println(payload);
         DynamicJsonDocument doc(4400);
         DeserializationError error = deserializeJson(doc, payload);
 
@@ -285,7 +289,8 @@ void JSONprint(void * parameter)
           tft.drawString(" min", 320, ((43 * i) + 30), 1);
         }
         payload.remove(0);
-      }else
+      }
+      if (httpResponseCode =! 200)
       {
         String error_code = "ERR CODE: " + String(httpResponseCode);
         tft.setTextPadding(320);
