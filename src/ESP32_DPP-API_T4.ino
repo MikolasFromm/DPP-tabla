@@ -11,6 +11,7 @@
 TFT_eSPI tft = TFT_eSPI();
 U8g2_for_TFT_eSPI u8f;
 
+unsigned long Time = 0;
 
 int width = 320; //RESOLUTION
 int height = 240; //RESOLUTION
@@ -303,6 +304,10 @@ void JSONprint(void * parameter)
       }
       http.end();
       
+    }
+    else
+    {
+      WiFi.reconnect();
     }
   }
 }
