@@ -132,6 +132,14 @@ void input_data_check()
     u8f.print("Zastávka nebyla určena!");
     delay(15000);
   }
+
+  if (myAPI == NULL)
+  {
+    u8f.setFont(u8g2_font_helvB12_te);
+    u8f.setCursor(60, 130);
+    u8f.print("Nebylo vloženo API!");
+    delay(15000);
+  }
 }
 
 void JSONread(void * parameter)
@@ -172,6 +180,7 @@ void JSONprint(void * parameter)
     int min_now = timeinfo.tm_min;
     int sec_now = timeinfo.tm_sec;
 
+
     if (WiFi.status() == WL_CONNECTED)
     {
 
@@ -181,10 +190,64 @@ void JSONprint(void * parameter)
       http.begin(serverPath.c_str());
       http.addHeader("x-access-token", myAPI);
       http.addHeader("content-type", ContentType);
-
       int httpResponseCode = http.GET();
       Serial.print("HTTP-CODE: ");
       Serial.println(httpResponseCode);
+      
+      // Small info text setting
+
+      tft.setTextColor(TFT_WHITE, TFT_BLACK);
+      tft.setTextSize(1);
+
+      // Printing time "now"
+
+      tft.setTextSize(2);
+      tft.setTextDatum(BC_DATUM);
+      tft.setTextPadding(tft.textWidth("00:00"));
+      String time_to_print;
+      if (hour_now < 10 && min_now < 10)
+      {
+        time_to_print = "0" + String(hour_now) + ":" + "0 " + String(min_now);
+      }
+      if (hour_now > 10 && min_now < 10)
+      {
+        time_to_print = String(hour_now) + ":" + "0 " + String(min_now);
+      }
+      if (hour_now < 10 && min_now > 10)
+      {
+        time_to_print = "0" + String(hour_now) + ":" + String(min_now);
+      }
+      if (hour_now > 10 && min_now > 10)
+      {
+        time_to_print = String(hour_now) + ":" + String(min_now);
+      }
+
+      tft.drawString(time_to_print, 160, 240, 1);
+      tft.setTextSize(1);
+
+      // Printing HTTP-CODE
+
+      tft.setTextDatum(BL_DATUM);
+      tft.setTextPadding(tft.textWidth("HTTP: 000"));
+      if (httpResponseCode == 200)
+      {
+        tft.setTextColor(TFT_GREEN, TFT_BLACK);
+      }else{
+        tft.setTextColor(TFT_RED, TFT_BLACK);
+      }
+      String http_code = "HTTP: " + String(httpResponseCode) + " REBOOTING!";
+      tft.drawString(http_code, 0, 240, 1);
+      tft.setTextColor(TFT_WHITE, TFT_BLACK);
+
+      // Printing "IP address"
+
+      String ip = WiFi.localIP().toString();
+      tft.setTextDatum(BR_DATUM);
+      tft.setTextPadding(tft.textWidth("10.10.10.255"));
+      tft.drawString(ip, 320, 240, 1);
+
+      // DOWNLOADING, PARSING and PRINTING DEPARTURES
+
       if (httpResponseCode == 200)
       {
         String payload = http.getString();
@@ -291,19 +354,12 @@ void JSONprint(void * parameter)
         }
         payload.remove(0);
       }
-      if (httpResponseCode =! 200)
+      if (httpResponseCode != 200)
       {
-        String error_code = "ERR CODE: " + String(httpResponseCode);
-        tft.setTextPadding(320);
-        tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        tft.setTextDatum(MC_DATUM);
-        tft.setTextSize(4);
-        tft.drawString(error_code, 160, 120, 1);
-        delay(10000);
-        tft.fillScreen(TFT_BLACK);
+        delay(20000);
+        ESP.restart();
       }
       http.end();
-      
     }
     else
     {
