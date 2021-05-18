@@ -229,13 +229,15 @@ void JSONprint(void * parameter)
 
       tft.setTextDatum(BL_DATUM);
       tft.setTextPadding(tft.textWidth("HTTP: 000"));
+      String http_code;
       if (httpResponseCode == 200)
       {
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
+        http_code = "HTTP: " + String(httpResponseCode);
       }else{
         tft.setTextColor(TFT_RED, TFT_BLACK);
+        http_code = "HTTP: " + String(httpResponseCode) + " REBOOTING!";
       }
-      String http_code = "HTTP: " + String(httpResponseCode) + " REBOOTING!";
       tft.drawString(http_code, 0, 240, 1);
       tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
