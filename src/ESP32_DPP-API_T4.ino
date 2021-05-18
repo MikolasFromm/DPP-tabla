@@ -211,11 +211,11 @@ void JSONprint(void * parameter)
 
       if (hour_now < 10 && min_now < 10)
       {
-        time_to_print = "0" + String(hour_now) + ":" + "0 " + String(min_now);
+        time_to_print = "0" + String(hour_now) + ":" + "0" + String(min_now);
       }
       if (hour_now > 10 && min_now < 10)
       {
-        time_to_print = String(hour_now) + ":" + "0 " + String(min_now);
+        time_to_print = String(hour_now) + ":" + "0" + String(min_now);
       }
       if (hour_now < 10 && min_now > 10)
       {
