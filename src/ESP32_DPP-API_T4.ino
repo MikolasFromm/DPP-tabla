@@ -19,18 +19,20 @@ int height = 240; //RESOLUTION
 const char* SSID = WIFI_NAME; //specified in setup.h
 const char* PASS = WIFI_PASS; //specified in setup.h
 
-String serverName = "https://api.golemio.cz/v2/departureboards/"; //DATA-SERVER
+
 const String myAPI = X_HEADER_TOKEN;
+const String TimeZone = "preferredTimezone=Europe%2FPrague";
 const String ContentType = "application/json; charset=utf-8"; //CONTENT-SPECIFICATION
 const String Zastavka = ZASTAVKA_CELA;
 const String Sloupek = ZASTAVKOVY_SLOUPEK;
+String serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
 String serverConditions;
 String serverPath;
 
 const int limit = 5; //LIMIT-OF-OBJECTS
 
 const char* ntpServer = "pool.ntp.org"; //TIME-SERVER
-const long  gmtOffset_sec = 0; //OFFSETS
+const long  gmtOffset_sec = 7200; //OFFSETS
 const int   daylightOffset_sec = 0; //OFFSETS
 
 TaskHandle_t data_task;
@@ -115,13 +117,13 @@ void input_data_check()
 {
   if (Zastavka == NULL)
   {
-    serverConditions = "?" + Sloupek + "&limit=" + String(limit);
+    serverConditions = Sloupek + "&limit=" + String(limit);
     serverPath = serverName + serverConditions;
   }
 
   if (Sloupek == NULL)
   {
-    serverConditions = "?" + Zastavka + "&limit=" + String(limit);
+    serverConditions = Zastavka + "&limit=" + String(limit);
     serverPath = serverName + serverConditions;
   }
 
@@ -205,6 +207,8 @@ void JSONprint(void * parameter)
       tft.setTextDatum(BC_DATUM);
       tft.setTextPadding(tft.textWidth("00:00"));
       String time_to_print;
+
+
       if (hour_now < 10 && min_now < 10)
       {
         time_to_print = "0" + String(hour_now) + ":" + "0 " + String(min_now);
