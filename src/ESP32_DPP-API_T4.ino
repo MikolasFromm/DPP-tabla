@@ -41,7 +41,6 @@ TaskHandle_t print_task;
 
 void setup()
 {
-
   wifi_tft_setup();
 
   input_data_check();
@@ -231,7 +230,7 @@ void JSONprint(void * parameter)
 
       // Printing HTTP-CODE
 
-      tft.setTextDatum(BL_DATUM);
+      /* tft.setTextDatum(BL_DATUM);
       tft.setTextPadding(tft.textWidth("HTTP: 000"));
       String http_code;
       if (httpResponseCode == 200)
@@ -243,14 +242,14 @@ void JSONprint(void * parameter)
         http_code = "HTTP: " + String(httpResponseCode) + " REBOOTING!";
       }
       tft.drawString(http_code, 0, 240, 1);
-      tft.setTextColor(TFT_WHITE, TFT_BLACK);
+      tft.setTextColor(TFT_WHITE, TFT_BLACK); */
 
       // Printing "IP address"
 
-      String ip = WiFi.localIP().toString();
+      /* String ip = WiFi.localIP().toString();
       tft.setTextDatum(BR_DATUM);
       tft.setTextPadding(tft.textWidth("10.10.10.255"));
-      tft.drawString(ip, 320, 240, 1);
+      tft.drawString(ip, 320, 240, 1); */
 
       // DOWNLOADING, PARSING and PRINTING DEPARTURES
 
@@ -362,7 +361,7 @@ void JSONprint(void * parameter)
       }
       if (httpResponseCode != 200)
       {
-        delay(20000);
+        delay(2000);
         ESP.restart();
       }
       http.end();
