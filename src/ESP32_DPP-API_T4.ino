@@ -114,18 +114,9 @@ void wifi_tft_setup()
 
 void input_data_check()
 {
-  if (Zastavka == NULL)
-  {
-    serverConditions = Sloupek + "&limit=" + String(limit);
-    serverPath = serverName + serverConditions;
-  }
-
-  if (Sloupek == NULL)
-  {
-    serverConditions = Zastavka + "&limit=" + String(limit);
-    serverPath = serverName + serverConditions;
-  }
-
+  serverConditions = Sloupek + Zastavka + "&limit=" + String(limit);
+  serverPath = serverName + serverConditions;
+  
   if (Sloupek == NULL && Zastavka == NULL)
   {
     u8f.setFont(u8g2_font_helvB12_te);
@@ -133,6 +124,14 @@ void input_data_check()
     u8f.print("Zastávka nebyla určena!");
     delay(15000);
   }
+
+  if (Sloupek != NULL && Zastavka != NULL)
+  {
+    u8f.setFont(u8g2_font_helvB12_te);
+    u8f.setCursor(60, 130);
+    u8f.print("Ids i jméno určeno!");
+    delay(15000);
+  }  
 
   if (myAPI == NULL)
   {
