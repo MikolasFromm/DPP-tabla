@@ -2,6 +2,7 @@
 #define DEBUG
 
 // global libs
+#include <utility>
 #include <WiFi.h>
 #include <time.h>
 #include <TFT_eSPI.h>
@@ -31,6 +32,8 @@ time_getter TimeGetter;
 
 // TaskHandle_t button_task;
 // TaskHandle_t data_task;
+
+unsigned long last_time;
 
 void setup()
 {
