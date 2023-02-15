@@ -44,7 +44,7 @@ class payload_parser
 
     // const getter parameters
     const std::string myAPI = X_HEADER_TOKEN;
-    const std::string TimeZone = "preferredTimezone=Europe%2FPrague";
+    const std::string TimeZone = "preferredTimezone=Etc%2FGMT";
     const std::string ContentType = "application/json; charset=utf-8"; //CONTENT-SPECIFICATION
     const std::string Zastavka = ZASTAVKA_CELA;
     const std::string Sloupek = ZASTAVKOVY_SLOUPEK;
