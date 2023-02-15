@@ -1,5 +1,6 @@
 #ifndef payload_parser_hpp_
 #define payload_parser_hpp_
+#define DOWNLOAD_LIMIT 5
 
 #include "setup.h"
 #include <string>
@@ -30,7 +31,7 @@ class payload_parser
     int deserialize_document();
     void start_http_client();
 
-    size_t limit = 5; // limit of objects to print
+    const size_t limit = 5; // limit of objects to print
 
     // Json document, default allocator missing
     SpiRamJsonDocument doc = SpiRamJsonDocument(1048576);

@@ -34,9 +34,8 @@ int payload_parser::deserialize_document()
     DeserializationError json_err = deserializeJson(this->doc, this->http.getStream());
     if (json_err)
     {
-      log_e("JSON deserialization failed: %s", json_err.c_str());
+      log_e("JSON deserialization failed: %s", json_err.c_str()); // SHOULD BE EXCEPTION
     }
-    log_d("JsonDocument memory usage: %d", this->doc.memoryUsage());
   }
   this->end_http_client();
   return request_https_code;
