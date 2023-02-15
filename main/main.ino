@@ -59,6 +59,7 @@ void tft_setup()
   u8f.setFontMode(1);
   u8f.setFontDirection(0);
   u8f.setForegroundColor(TFT_WHITE);
+  u8f.setFont(u8g2_font_helvB12_te);
 }
 
 void wifi_setup()
