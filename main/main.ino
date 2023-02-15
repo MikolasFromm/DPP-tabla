@@ -12,6 +12,7 @@
 // local implementations
 #include "config_getter.hpp"
 #include "payload_parser.hpp"
+#include "payload_printer.hpp"
 #include "time_getter.hpp"
 
 // general setup
@@ -26,14 +27,15 @@ size_t height = 240; //RESOLUTION
 const char* SSID = WIFI_NAME; //specified in setup.h
 const char* PASS = WIFI_PASS; //specified in setup.h
 
+// support libs construct
 config_getter ConfigGetter;
 payload_parser PayloadParser;
+payload_printer PayloadPrinter;
 time_getter TimeGetter;
 
+// DualCore declaration
 // TaskHandle_t button_task;
 // TaskHandle_t data_task;
-
-unsigned long last_time;
 
 void setup()
 {
@@ -119,21 +121,6 @@ void print_payload()
 {
   if (PayloadParser.deserialize_document() == 200)
   {
-    for (size_t i = 0; i < PayloadParser.limit; i++)
-    {
-      JsonObject root = PayloadParser.doc[i];
-      std::string root_arrival_timestamp_scheduled = root["arrival_timestamp"]["scheduled"];
-      std::string root_route_short_name = root["route"]["short_name"];
-
-      JsonObject root_delay = root["delay"];
-      int root_delay_minutes = root_delay["minutes"];
-
-      JsonObject root_trip = root["trip"];
-      std::string root_trip_headsign = root_trip["headsign"];
-
-      Serial.println(root_route_short_name.c_str());
-      Serial.println(root_trip_headsign.c_str());
-      Serial.println(root_arrival_timestamp_scheduled.c_str());
-    }
+    PayloadPrinter.print_payload(tft, u8f, PayloadParser, TimeGetter);
   }
 }
