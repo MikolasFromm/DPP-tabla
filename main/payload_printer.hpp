@@ -12,6 +12,8 @@ class payload_printer
     public:
     void print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_font_package, payload_parser& payload, time_getter& tg);
     private:
+    std::string line_buffer[DOWNLOAD_LIMIT];
+    std::string line_orientation_buffer[DOWNLOAD_LIMIT];
 };
 
 #endif

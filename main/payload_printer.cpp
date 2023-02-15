@@ -20,19 +20,54 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
 
                 JsonObject root_trip = root["trip"];
                 std::string root_trip_headsign = root_trip["headsign"]; // line destination
-                
-                Serial.println(route_short_name.c_str());
-                Serial.println(root_trip_headsign.c_str());
-                //Serial.println(arrival_timestamp_predicted.c_str());
-                char buffer[100];
-                std::strftime(buffer, 100, "%Y-%m-%d %H:%M:%S", &tg.current_time);
-                Serial.print("Current_time: ");
-                Serial.println(buffer);
-                std::strftime(buffer, 100, "%Y-%m-%d %H:%M:%S", &tg.parsed_string_time);
-                Serial.print("Parsed_time:  ");
-                Serial.println(buffer);
-                Serial.print("Diff in minutes: ");
-                Serial.println(time_diff);
+
+                // printing line number
+                if (this->line_buffer[i] != route_short_name)
+                {
+                    adv_font_package.setFont(u8g2_font_helvB18_te); // bigger font for line number
+                    adv_font_package.setCursor(5, ((43 * i) + 30));
+                    display.fillRect(5, ((43 * i) + 5), 50, 30, TFT_BLACK);
+                    adv_font_package.print(route_short_name.c_str());
+                    this->line_buffer[i] = route_short_name;
+                }
+
+                // printing line destination
+                if (this->line_orientation_buffer[i] != root_trip_headsign)
+                {
+                    adv_font_package.setFont(u8g2_font_helvB12_te); // smaller font for line orientation
+                    adv_font_package.setCursor(70, ((43 * i) + 30));
+                    display.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
+                    adv_font_package.print(root_trip_headsign.c_str());
+                    this->line_orientation_buffer[i] = root_trip_headsign;
+                }
+
+                // printing time remaining in minutes
+                display.setTextSize(2);
+                display.setTextDatum(BR_DATUM);
+                if (time_diff < 1)
+                {
+                    display.setTextColor(TFT_ORANGE, TFT_BLACK);
+                    display.setTextPadding(50);
+                    display.drawString("<1", 290, ((43 * i) + 30), 1);
+                }
+                else {
+                    if (delay >= 1)
+                    {
+                        display.setTextColor(TFT_RED, TFT_BLACK);
+                    }
+                    if (delay < 1)
+                    {
+                        display.setTextColor(TFT_GREEN, TFT_BLACK);
+                    }
+                    display.setTextPadding(45);
+                    display.drawString(std::to_string(time_diff).c_str(), 290, ((43 * i) + 30), 1);
+                }
+
+                // min footer
+                display.setTextSize(1);
+                display.setTextDatum(BR_DATUM);
+                display.setTextPadding(25);
+                display.drawString(" min", 320, ((43 * i) + 30), 1);
             }
         }
     }
