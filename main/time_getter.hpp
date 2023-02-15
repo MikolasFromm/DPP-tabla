@@ -17,7 +17,7 @@ class time_getter
     int get_timedelta_in_minutes();
   private:
     const char* ntpServer = "pool.ntp.org"; //TIME-SERVER
-    const long  gmtOffset_sec = 7200; //OFFSETS
+    const long  gmtOffset_sec = 0; //OFFSETS (7200)
     const int   daylightOffset_sec = 0; //OFFSETS
 };
 
