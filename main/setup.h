@@ -9,10 +9,10 @@
 //
 
 // Zde vložte jméno WiFi sítě
-#define WIFI_NAME "I@home_Guest"
+#define WIFI_NAME "OK1-BBTP50"
 
 // Zde vložte heslo k vaší WiFi síti
-#define WIFI_PASS "BeOurGuest"
+#define WIFI_PASS "MikuljeBUH"
 
 // Zde vložte váš vygenerovaný API key
 #define X_HEADER_TOKEN "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjYxNDMwODE0LCJleHAiOjExNjYxNDMwODE0LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZTAzZjBkMWItYmE3OS00OGRiLThiOTItNDA3OTUzMDEyMWRmIn0.it9PdUqBO1YImkBjEHZ29vuKwesEhbYHTu49V8Gh2Dg"
