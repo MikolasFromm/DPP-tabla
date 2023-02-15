@@ -20,6 +20,16 @@ bool time_getter::try_parse_string_timestamp(std::string& timestamp)
         return true;
 }
 
+const struct tm& time_getter::get_current_time()
+{
+    return this->current_time;
+}
+
+const struct tm& time_getter::get_parsed_time()
+{
+    return this->parsed_string_time;
+}
+
 int time_getter::get_timedelta_in_minutes()
 {
     std::time_t time_now = std::mktime(&this->current_time);
