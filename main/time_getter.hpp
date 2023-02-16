@@ -1,6 +1,8 @@
 #ifndef time_getter_hpp_
 #define time_getter_hpp_
 
+#include "main_const.hpp"
+
 #include "time.h"
 #include <string>
 #include <ctime>
