@@ -10,6 +10,7 @@
 #include <string>
 
 // local implementations
+#include "main_const.hpp"
 #include "config_getter.hpp"
 #include "payload_parser.hpp"
 #include "payload_printer.hpp"
@@ -18,8 +19,6 @@
 // general setup
 TFT_eSPI tft = TFT_eSPI();
 U8g2_for_TFT_eSPI u8f;
-
-unsigned long Time = 0;
 
 size_t width = 320; //RESOLUTION
 size_t height = 240; //RESOLUTION
