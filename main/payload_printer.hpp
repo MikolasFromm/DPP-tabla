@@ -1,6 +1,8 @@
 #ifndef paylaod_printer_hpp_
 #define payload_printer_hpp_
 
+#include "main_const.hpp"
+
 #include <time.h>
 #include <TFT_eSPI.h>
 #include <U8g2_for_TFT_eSPI.h>

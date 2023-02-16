@@ -5,7 +5,7 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
 {
     if (tg.try_get_current_time())
     {
-        for (size_t i = 0; i < payload.limit; i++)
+        for (size_t i = 0; i < DOWNLOAD_LIMIT; i++)
         {
             JsonObject root = payload.doc[i];
             std::string arrival_timestamp_predicted = root["arrival_timestamp"]["predicted"]; // "2023-02-11T22:39:00+01:00"
