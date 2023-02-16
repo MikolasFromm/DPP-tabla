@@ -17,7 +17,7 @@ int payload_parser::input_data_check()
   else
   {
     std::ostringstream ss;
-    ss << this->limit;
+    ss << DOWNLOAD_LIMIT;
     this->serverConditions = this->Sloupek + this->Zastavka + "&limit=" + ss.str();
     this->serverPath = serverName + serverConditions;
     return -1;

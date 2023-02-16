@@ -1,6 +1,7 @@
 #ifndef payload_parser_hpp_
 #define payload_parser_hpp_
-#define DOWNLOAD_LIMIT 5
+
+#include "main_const.hpp"
 
 #include "setup.h"
 #include <string>
@@ -31,8 +32,6 @@ class payload_parser
     int deserialize_document();
     void start_http_client();
 
-    const size_t limit = 5; // limit of objects to print
-
     // Json document, default allocator missing
     SpiRamJsonDocument doc = SpiRamJsonDocument(1048576);
 
@@ -45,11 +44,11 @@ class payload_parser
 
     // const getter parameters
     const std::string myAPI = X_HEADER_TOKEN;
-    const std::string TimeZone = "preferredTimezone=Etc%2FGMT";
-    const std::string ContentType = "application/json; charset=utf-8"; //CONTENT-SPECIFICATION
+    const std::string TimeZone = TIMEZONE;
+    const std::string ContentType = CONTENT_TYPE; //CONTENT-SPECIFICATION
     const std::string Zastavka = ZASTAVKA_CELA;
     const std::string Sloupek = ZASTAVKOVY_SLOUPEK;
-    std::string serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
+    const std::string serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
     std::string serverConditions = "";
     std::string serverPath = "";
 
