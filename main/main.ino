@@ -1,6 +1,3 @@
-// debug definition
-#define DEBUG
-
 // global libs
 #include <utility>
 #include <WiFi.h>
@@ -15,6 +12,7 @@
 #include "payload_parser.hpp"
 #include "payload_printer.hpp"
 #include "time_getter.hpp"
+#include "buttons.hpp"
 
 // general setup
 TFT_eSPI tft = TFT_eSPI();
@@ -32,21 +30,76 @@ payload_parser PayloadParser;
 payload_printer PayloadPrinter;
 time_getter TimeGetter;
 
+// buttons
+Button class_buttons[] = {BUTTON_1, BUTTON_2, BUTTON_3}; // left, center, right
+constexpr int class_buttons_count = sizeof(class_buttons) / sizeof(class_buttons[0]);
+
 // DualCore declaration
-// TaskHandle_t button_task;
-// TaskHandle_t data_task;
+TaskHandle_t button_task;
+TaskHandle_t data_task;
 
 void setup()
 {
   Serial.begin(115200);
+  ConfigGetter.read_config();
+  button_setup();
   tft_setup();
   wifi_setup();
   input_check();
+
+  xTaskCreatePinnedToCore(
+    ButtonRead,
+    "TASK_BUTTONS",
+    10000,
+    NULL,
+    0,
+    &button_task,
+    0
+  );
+
+  xTaskCreatePinnedToCore(
+    JsonRead,
+    "TASK_DATA",
+    10000,
+    NULL,
+    0,
+    &data_task,
+    0
+  );
+}
+
+void ButtonRead(void * parameter)
+{
+  for(;;)
+  {
+  }
+}
+
+void JsonRead(void * parameter)
+{
+  for(;;)
+  {
+    try
+    {
+      print_payload();
+    }
+    catch(const std::exception& e)
+    {
+      Serial.println(e.what());
+    }
+  }
 }
 
 void loop()
 {
-  print_payload();
+  vTaskDelete(NULL);
+}
+
+void button_setup()
+{
+  pinMode(BUTTON_1, INPUT);
+  pinMode(BUTTON_2, INPUT);
+  pinMode(BUTTON_3, INPUT);  
 }
 
 void tft_setup()
