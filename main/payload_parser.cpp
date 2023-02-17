@@ -18,8 +18,9 @@ int payload_parser::input_data_check()
   {
     std::ostringstream ss;
     ss << DOWNLOAD_LIMIT;
-    this->serverConditions = this->Sloupek + this->Zastavka + "&limit=" + ss.str();
+    this->serverConditions = this->Sloupek + this->Zastavka + "&limit=" + ss.str() + "&minutesBefore=" + std::to_string(ADDITIONAL_TIME_TO_STOP);
     this->serverPath = serverName + serverConditions;
+    Serial.println(this->serverPath.c_str());
     return -1;
   }
 }
