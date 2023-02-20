@@ -17,12 +17,8 @@
 // general setup
 TFT_eSPI tft = TFT_eSPI();
 U8g2_for_TFT_eSPI u8f;
-
-size_t width = 320; //RESOLUTION
-size_t height = 240; //RESOLUTION
-
-const char* SSID = WIFI_NAME; //specified in setup.h
-const char* PASS = WIFI_PASS; //specified in setup.h
+bool deep_sleep = false;
+int last_stop_index = 0;
 
 // support libs construct
 config_getter ConfigGetter;
@@ -40,10 +36,11 @@ TaskHandle_t data_task;
 
 void setup()
 {
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_37, 0);
   Serial.begin(115200);
-  ConfigGetter.read_config();
-  button_setup();
   tft_setup();
+  ConfigGetter.read_config(tft);
+  button_setup();
   wifi_setup();
   input_check();
 
@@ -72,6 +69,15 @@ void ButtonRead(void * parameter)
 {
   for(;;)
   {
+    if(class_buttons[2].check_it())
+    {
+      ConfigGetter.increment_stop_index();
+      input_check();
+    }
+    if (class_buttons[0].check_it())
+    {
+        esp_deep_sleep_start();
+    }
   }
 }
 
@@ -79,14 +85,13 @@ void JsonRead(void * parameter)
 {
   for(;;)
   {
-    try
+    if (ConfigGetter.get_current_stop_index() != last_stop_index)
     {
-      print_payload();
+      last_stop_index = ConfigGetter.get_current_stop_index();
+      tft.fillScreen(TFT_BLACK);
+      PayloadPrinter.clean_buffers();
     }
-    catch(const std::exception& e)
-    {
-      Serial.println(e.what());
-    }
+    print_payload();
   }
 }
 
@@ -114,21 +119,19 @@ void tft_setup()
   u8f.setFont(u8g2_font_helvB12_te);
 }
 
-void wifi_setup()
+void wifi_setup() // requires input_check to get SSID and PASSWORD
 {
   ///<summary>Setup function to connect to given WiFi. Requires Serial and TFT already set-up</summary>
-  WiFi.begin(SSID, PASS);
+  WiFi.begin(ConfigGetter.get_ssid().c_str(), ConfigGetter.get_wifi_pass().c_str());
 
   tft.setTextDatum(MC_DATUM);
   tft.setTextSize(3);
   tft.setTextColor(TFT_BLACK, TFT_GREEN);
   tft.drawString("Connecting...", 160, 60, 1);
-  log_d("Connecting");
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
   }
-  log_d("Connected to WiFi");
 
   // Succesful connection notification
   tft.setTextPadding(250);
@@ -141,9 +144,10 @@ void wifi_setup()
 
 }
 
-void input_check()
+void input_check() // possible to call repeatedly, always taking the current stop_name arguments
 {
-  switch(PayloadParser.input_data_check())
+  PayloadParser.flush_json_doc();
+  switch(PayloadParser.input_data_check(ConfigGetter.get_current_stop(), ConfigGetter.get_current_stop_walktime()))
   // default -1 return value will be silently ignored, error values will be printed
   {
     case 10:
@@ -174,6 +178,6 @@ void print_payload()
 {
   if (PayloadParser.deserialize_document() == 200)
   {
-    PayloadPrinter.print_payload(tft, u8f, PayloadParser, TimeGetter);
+    PayloadPrinter.print_payload(tft, u8f, PayloadParser, TimeGetter, ConfigGetter.get_current_stop_nickname());
   }
 }
