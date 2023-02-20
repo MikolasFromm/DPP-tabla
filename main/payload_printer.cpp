@@ -1,7 +1,7 @@
 #include "payload_printer.hpp"
 #include "time_getter.hpp"
 
-void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_font_package, payload_parser& payload, time_getter& tg)
+void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_font_package, payload_parser& payload, time_getter& tg, std::string& stop_nickname)
 {
     if (tg.try_get_current_time())
     {
@@ -50,7 +50,8 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
                     display.setTextPadding(50);
                     display.drawString("<1", 290, ((43 * i) + 30), 1);
                 }
-                else {
+                else 
+                {
                     if (delay >= 1)
                     {
                         display.setTextColor(TFT_RED, TFT_BLACK);
@@ -68,7 +69,28 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
                 display.setTextDatum(BR_DATUM);
                 display.setTextPadding(25);
                 display.drawString(" min", 320, ((43 * i) + 30), 1);
+
+                // printing stop nickname
+                if (this-> nickname_buffer != stop_nickname)
+                {
+                    this->nickname_buffer = stop_nickname;
+                    display.setTextColor(TFT_WHITE);
+                    display.setTextSize(2);
+                    display.setTextDatum(BC_DATUM);
+                    display.fillRect(0, 210, 320, 30, TFT_BLACK); // making black rectangle behind to cover old text
+                    display.drawString(this->nickname_buffer.c_str(), 160, 235, 1);
+                }
             }
         }
+    }
+}
+
+void payload_printer::clean_buffers()
+{
+    for (size_t i = 0; i < DOWNLOAD_LIMIT; i++)
+    {
+        this->line_buffer[i] = "";
+        this->line_orientation_buffer[i] = "";
+        this->nickname_buffer = "";
     }
 }
