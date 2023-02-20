@@ -4,6 +4,7 @@
 #include "main_const.hpp"
 
 #include "setup.h"
+#include <vector>
 #include <string>
 #include <sstream>
 #include <HTTPClient.h>
@@ -28,9 +29,10 @@ using SpiRamJsonDocument = BasicJsonDocument<SpiRamAllocator>;
 class payload_parser
 {
   public:
-    int input_data_check();
+    int input_data_check(std::string& stop_names, int walktime_to_stop);
     int deserialize_document();
     void start_http_client();
+    void flush_json_doc() { this->doc.clear();}
 
     // Json document, default allocator missing
     SpiRamJsonDocument doc = SpiRamJsonDocument(1048576);
@@ -46,8 +48,6 @@ class payload_parser
     const std::string myAPI = X_HEADER_TOKEN;
     const std::string TimeZone = TIMEZONE;
     const std::string ContentType = CONTENT_TYPE; //CONTENT-SPECIFICATION
-    const std::string Zastavka = ZASTAVKA_CELA;
-    const std::string Sloupek = ZASTAVKOVY_SLOUPEK;
     const std::string serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
     std::string serverConditions = "";
     std::string serverPath = "";

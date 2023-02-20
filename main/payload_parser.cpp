@@ -1,14 +1,10 @@
 #include "payload_parser.hpp"
 
-int payload_parser::input_data_check()
+int payload_parser::input_data_check(std::string& stop_name, int walktime_to_stop)
 {
-  if (this->Sloupek == "" && this->Zastavka == "")
+  if (stop_name == "")
   {
     return 10; // no argument given
-  }
-  else if (this->Sloupek != "" && this->Zastavka != "")
-  {
-    return 11; // collision arguments
   }
   else if (this->myAPI == "")
   {
@@ -18,7 +14,7 @@ int payload_parser::input_data_check()
   {
     std::ostringstream ss;
     ss << DOWNLOAD_LIMIT;
-    this->serverConditions = this->Sloupek + this->Zastavka + "&limit=" + ss.str() + "&minutesBefore=" + std::to_string(ADDITIONAL_TIME_TO_STOP);
+    this->serverConditions = stop_name + "&limit=" + ss.str() + "&minutesBefore=" + std::to_string(walktime_to_stop);
     this->serverPath = serverName + serverConditions;
     Serial.println(this->serverPath.c_str());
     return -1;
@@ -28,6 +24,8 @@ int payload_parser::input_data_check()
 int payload_parser::deserialize_document()
 {
   this->start_http_client();
+  Serial.print("Deserialization started: ");
+  Serial.println(this->serverPath.c_str());
   int request_https_code = this->http.GET();
   if (request_https_code == 200)
   {
@@ -45,7 +43,7 @@ int payload_parser::deserialize_document()
 void payload_parser::start_http_client()
 {
   this->http.useHTTP10(true);
-  this->http.begin(serverPath.c_str(), this->cert.c_str());
+  this->http.begin(this->serverPath.c_str(), this->cert.c_str());
   this->http.addHeader("x-access-token", this->myAPI.c_str());
   this->http.addHeader("content-type",  this->ContentType.c_str());
 }
