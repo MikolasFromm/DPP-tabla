@@ -40,6 +40,11 @@ int payload_parser::deserialize_document()
   return request_https_code;
 }
 
+void payload_parser::load_api_from_config(std::string& api)
+{
+  this->myAPI = api;
+}
+
 void payload_parser::start_http_client()
 {
   this->http.useHTTP10(true);

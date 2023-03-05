@@ -19,6 +19,7 @@ class config_getter
   int get_current_stop_walktime() { return this->walktime_to_stop[this->stop_index];}
   std::string& get_ssid() { return this->ssid;}
   std::string& get_wifi_pass() { return this->wifi_pass;}
+  std::string& get_api_key() { return this->api_key;}
 
 
   private:
@@ -28,6 +29,7 @@ class config_getter
   std::vector<std::string> stop_nicknames;
   std::string ssid;
   std::string wifi_pass;
+  std::string api_key;
 };
 
 #endif

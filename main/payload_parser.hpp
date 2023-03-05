@@ -31,6 +31,7 @@ class payload_parser
   public:
     int input_data_check(std::string& stop_names, int walktime_to_stop);
     int deserialize_document();
+    void load_api_from_config(std::string& api);
     void start_http_client();
     void flush_json_doc() { this->doc.clear();}
 
@@ -44,9 +45,9 @@ class payload_parser
     // http client for GET requests
     HTTPClient http;
 
-    // const getter parameters
-    const std::string myAPI = X_HEADER_TOKEN;
-    const std::string TimeZone = TIMEZONE;
+    // getter parameters
+    std::string myAPI;
+    std::string TimeZone = TIMEZONE;
     const std::string ContentType = CONTENT_TYPE; //CONTENT-SPECIFICATION
     const std::string serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
     std::string serverConditions = "";

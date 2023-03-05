@@ -1,5 +1,60 @@
 #include "payload_printer.hpp"
 #include "time_getter.hpp"
+#include "main_const.hpp"
+
+std::string payload_printer::cut_string(std::string& origin)
+{
+    if (origin.length() > DISP_TEXT_MAX_LEN)
+    {
+        std::vector<std::string> name;
+        name.push_back("");
+        // cutting into vector
+        size_t index = 0;
+        for (size_t i = 0; i < origin.length(); i++)
+        {
+            if (origin[i] == ' ')
+            {
+                index++;
+                name.push_back("");
+            }
+            else
+                name[index] += origin[i];
+        }
+        // shortening first positions
+        index = 0;
+        if (name.size() > 1)
+        {
+            if (name.size() == 2)
+            {
+                name[0] = name[0].substr(0, 4) + ".";
+            }
+            else
+            {
+                while (index < name.size() - 1) // last word must be left
+                {
+                    name[index] = name[index][0];
+                    name[index] += ".";
+                    index++;
+                }
+            }
+            // getting words back together
+            std::string res = "";
+            size_t name_size = name.size();
+            for (size_t i = 0; i < name_size; i++)
+            {
+                res += name[i];
+                if (i != name_size - 1)
+                    res += " ";
+            }
+            return res;
+        }
+        else
+        {
+            return name[0];
+        }
+    }
+    return origin;
+}
 
 void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_font_package, payload_parser& payload, time_getter& tg, std::string& stop_nickname)
 {
@@ -24,21 +79,24 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
                 // printing line number
                 if (this->line_buffer[i] != route_short_name)
                 {
-                    adv_font_package.setFont(u8g2_font_helvB18_te); // bigger font for line number
-                    adv_font_package.setCursor(5, ((43 * i) + 30));
+                    size_t offset = 5;
+                    offset += adv_font_package.getUTF8Width("1")*(3 - route_short_name.length())*2;
+                    Serial.println(offset); 
+                    this->line_buffer[i] = route_short_name;
+                    adv_font_package.setFont(u8g2_font_helvB18_te); // bigger font for line numbers
+                    adv_font_package.setCursor(offset, ((43 * i) + 30));
                     display.fillRect(5, ((43 * i) + 5), 50, 30, TFT_BLACK);
                     adv_font_package.print(route_short_name.c_str());
-                    this->line_buffer[i] = route_short_name;
                 }
 
                 // printing line destination
                 if (this->line_orientation_buffer[i] != root_trip_headsign)
                 {
+                    this->line_orientation_buffer[i] = root_trip_headsign;
                     adv_font_package.setFont(u8g2_font_helvB12_te); // smaller font for line orientation
                     adv_font_package.setCursor(70, ((43 * i) + 30));
                     display.fillRect(70, ((43 * i) + 12), 200, 25, TFT_BLACK);
-                    adv_font_package.print(root_trip_headsign.c_str());
-                    this->line_orientation_buffer[i] = root_trip_headsign;
+                    adv_font_package.print(cut_string(root_trip_headsign).c_str());
                 }
 
                 // printing time remaining in minutes

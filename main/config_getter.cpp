@@ -2,7 +2,7 @@
 
 void config_getter::read_config(TFT_eSPI& tft)
 {
-    enum load_status {waiting, stop, time, nick, ssid, pass};
+    enum load_status {waiting, stop, time, nick, ssid, pass, api};
     load_status current_status = load_status::waiting;
     
     tft.setTextDatum(MC_DATUM);
@@ -58,6 +58,10 @@ void config_getter::read_config(TFT_eSPI& tft)
                             {
                                 current_status = load_status::pass;
                             }
+                            else if (buffer == "A:")
+                            {
+                                current_status = load_status::api;
+                            }
                             else
                             {
                                 // ERROR! WRONG DATA FORMAT
@@ -95,6 +99,10 @@ void config_getter::read_config(TFT_eSPI& tft)
                             break;
                         case load_status::pass:
                             this->wifi_pass = buffer;
+                            current_status = load_status::waiting;
+                            break;
+                        case load_status::api:
+                            this->api_key = buffer;
                             current_status = load_status::waiting;
                             break;
                         }

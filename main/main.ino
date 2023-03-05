@@ -40,6 +40,7 @@ void setup()
   Serial.begin(115200);
   tft_setup();
   ConfigGetter.read_config(tft);
+  PayloadParser.load_api_from_config(ConfigGetter.get_api_key());
   button_setup();
   wifi_setup();
   input_check();
