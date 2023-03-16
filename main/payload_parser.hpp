@@ -3,7 +3,6 @@
 
 #include "main_const.hpp"
 
-#include "setup.h"
 #include <vector>
 #include <string>
 #include <sstream>

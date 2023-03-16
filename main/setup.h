@@ -1,7 +1,0 @@
-// TODO rename to setup.h and fill in credentials of your wifi
-#ifndef SETUP_H
-#define SETUP_H
-// Zde vložte váš vygenerovaný API key
-#define X_HEADER_TOKEN "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjYxNDMwODE0LCJleHAiOjExNjYxNDMwODE0LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZTAzZjBkMWItYmE3OS00OGRiLThiOTItNDA3OTUzMDEyMWRmIn0.it9PdUqBO1YImkBjEHZ29vuKwesEhbYHTu49V8Gh2Dg"
-
-#endif /* SETUP_H */
