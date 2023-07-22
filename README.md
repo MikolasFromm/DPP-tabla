@@ -1,92 +1,131 @@
-# Odjezdová tabule DPP
+# ESP32 - DPP Departure board
 
+<p align="center">
+  <img src=https://miko.fromm.one/public-pocket/fotky/DPP_TABLA_PIC.jpg alt= “” width=50%>
+</p>
 
+## Introduction
 
-## Getting started
+Prague departure board running on an ESP32 microcontroller together with TFT ILI9341 display. Developed as a semester project for a C++ curse.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Data source
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Current solution uses a LIVE data bank from [Golemio API](https://api.golemio.cz/v2/pid/docs/openapi/). Specifically, it uses the endpoint [https://api.golemio.cz/v2/pid/departureboards](https://api.golemio.cz/v2/pid/departureboards), which writes down top _x_ closest departures from the given stop / stop-stand in a JSON format.
 
-## Add your files
+It is possible to watch departures in all direction of a stop, or it is possible to focus only on a chosen direction or even a single stand of a given stop. (Usually trams and buses have separated stands.)
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.mff.cuni.cz/frommm/odjezdova-tabule-dpp.git
-git branch -M master
-git push -uf origin master
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.mff.cuni.cz/frommm/odjezdova-tabule-dpp/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+It is required to generate a personal API token key for your own usage on the given address: https://api.golemio.cz/api-keys/auth/sign-in
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+This particular hardware configuration contains three buttons, which are used for the following tasks:
+- Changing the displayed stop, choosing the next from the configuration,
+- DeepSleep aka turning off the display,
+- WakeFromSleep aka turning on the display.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Since this particular board is not capable of turning off the display backlit separately, it is overriden by entering DeepSleep mode, which is almost perfect, except for the fact that the board is required to reboot after the sleep because of a WiFi reconnection. This all is done automatically after waking up.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### CONFIG
+In order to succesfully print any departures on this departure board, a config file must be correctly filled with a required data. The config file has a following structure:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```
+## API
+A: "your-api-key"
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## WIFI
+W: "SSID"
+P: "PSSWD"
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## STOP 1 with nickname and walking time
+Z: "ids=U236Z1P&ids=U236Z4P"
+N: "Slanska"
+T: "-2"
 
-## License
-For open source projects, say how it is licensed.
+## STOP 2 with nickname only
+Z: "names=Malostransk%C3%A9%20n%C3%A1m%C4%9Bst%C3%AD"
+N: "Mal.nam."
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## STOP 3 without any additional info.
+Z: "names=Malostransk%C3%A1"
+
+```
+    A: placeholder for your API key
+    W: placeholder for your WiFi SSID (name)
+    P: placeholder for your Wifi PASSWD
+
+    Z: placeholder for stop-name argument
+    N: placeholder for stop nickname argument
+    T: placeholder for time to walk to the stop
+
+Note that _"walk to the stop"_ supports both negative and positive values - both represented as a minimal time to reach the stop. If a positive value is given, it is transformed into negative values, because it uses _"timeBefore: -x "_ request.
+
+Also note that you can combine multiple values by separating the request with "&". It is only required to use **_names=_** or **_ids=_** exclusively and not together.
+
+If you define a nickname under the stop request definition, it will be printed at the bottom of the display to easily distinguish between the stops. 
+
+The easiest way to get the correct stop request is to form it on [this address](https://api.golemio.cz/v2/pid/docs/openapi/#/%F0%9F%9A%8F%20PID%20Departure%20Boards/get_pid_departureboards).
+
+The config file must be called **config.txt**, must follow the format defined in the section above and must be placed in the root of the microSD card which will be inserted.
+
+## Project resources
+Project is depending on the following Arduino libs.:
+
+- https://github.com/Bodmer/TFT_eSPI
+- https://github.com/Bodmer/U8g2_for_TFT_eSPI
+- https://arduinojson.org/
+
+Since the SSL communication combined with a parsing of a JSON documents is not a memory-free operation, it is welcomed that the board comes with 4MB of PSRAM, without which the board crashes frequently. The ArduinoJson therefore automatically allocates its memory pool into the PSRAM for each parsing request instead of the internal memory. This way the ESP32 has enough memory to survive.
+
+## Code description
+
+### buttons.hpp
+Simple library to simplify checking if a button is pressed or not. ALso dealing with mechanical debounce with a fixed timeout before each "click".
+
+Function `check_it()` callable on each button then simply returns `Bool` of the current button status.
+
+### config_getter.cpp/hpp
+Obtaining the configuration setup from the given `config.txt` file via microSD card.
+It is a simple loading automata, where each data line must start with an existing placeholder. After a placeholder, anything behind the leading space will be considered as a valid input text.
+The loading is obtained by calling function `void config_getter::read_config`.
+
+### main_const.hpp
+Consisting of four static settings of the board, namely:
+
+- max num. of rows
+- max len. of name
+- timezone
+- content/type
+
+### payload_parser.cpp/hpp
+Main function of the solution, which downloads and parses the JSON response.
+
+Any call must be started with `void payload_parser::start_http_client()` and ended with `void payload_parser::end_http_client()`. Apart from that, after loading the data with `void config_getter::read_config`, it is required to call `int payload_parser::input_data_check` which not only checks if `API key` and `StopName` is given, but also creates the static GET request URL.
+
+To obtain the parsed response, `int payload_parser::deserialize_document()` will do the job including saving the response to the external PSRAM memory to keep the device running without random shutdowns.
+
+### payload_printer.cpp/hpp
+Function to print all departures downloaded from the API.
+It is expected that the `void payload_printer::print_payload` is called after obtaining the response from the API server. Therefore there is the following workaround in `main.ino`:
+```
+void print_payload()
+{
+  if (PayloadParser.deserialize_document() == 200)
+  {
+    PayloadPrinter.print_payload(tft, u8f, PayloadParser, TimeGetter, ConfigGetter.get_current_stop_nickname());
+  }
+}
+```
+Printer has some static dependencies from `main_const.hpp`, such as `DOWNLOAD_LIMIT` and `DISP_TEXT_MAX_LEN`. Since there is not enough space for more than 5 departures, the download is limited to save memory space. Also, depending on the given font, long FINAL-STOP names must not fit inside the space of the display. Therefore when name is longer than `DISP_TEXT_MAX_LEN`, `std::string payload_printer::cut_string(std::string& origin)` will cut the name like this:
+
+- Ústřední dílny DP -> Ú. d. DP
+
+leaving the last word untouched.
+
+### time_getter.cpp/hpp
+Library to work with time. Has three functions:
+
+- obtain current time: `bool time_getter::try_get_current_time()`
+- parse timestamp from API server: `bool time_getter::try_parse_string_timestamp(std::string& timestamp)`
+- get delta of two times: `int time_getter::get_timedelta_in_minutes()`
+
+The last _delta_ function is used to show minutes left to the given departure.
