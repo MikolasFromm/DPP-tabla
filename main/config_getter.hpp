@@ -23,6 +23,7 @@ class config_getter
 
 
   private:
+  void load_default_values();
   int stop_index = 0;
   std::vector<std::string> stop_names;
   std::vector<int> walktime_to_stop;

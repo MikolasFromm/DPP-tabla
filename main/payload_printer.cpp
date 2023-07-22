@@ -32,8 +32,18 @@ std::string payload_printer::cut_string(std::string& origin)
             {
                 while (index < name.size() - 1) // last word must be left
                 {
-                    name[index] = name[index][0];
-                    name[index] += ".";
+                    // when the first char is > 'z', it is very likely a diacritics, therefore add even the second letter.
+                    if (name[index][0] > 'z')
+                    {
+                        name[index] = name[index].substr(0, 2);
+                        name[index] += ".";
+                    }
+                    // else show just the first letter
+                    else
+                    {
+                        name[index] = name[index][0];
+                        name[index] += ".";
+                    }
                     index++;
                 }
             }

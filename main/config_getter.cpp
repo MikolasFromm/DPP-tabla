@@ -69,17 +69,7 @@ void config_getter::read_config(TFT_eSPI& tft)
                             break;
                         case load_status::stop:
                         {
-                            // if nickname or time to stop not given, pushing back default
-                            std::size_t count_of_stops = this->stop_names.size();
-                            if (this->walktime_to_stop.size() < count_of_stops)
-                            {
-                                this->walktime_to_stop.push_back(0);
-                            }
-                            if (this->stop_nicknames.size() < count_of_stops)
-                            {
-                                std::string unknown_name = "\"Neznámé jméno\"";
-                                this->stop_nicknames.push_back(unknown_name);
-                            }
+                            this->load_default_values();
                             // pushing back the new stop
                             this->stop_names.push_back(buffer);
                             current_status = load_status::waiting;
@@ -90,9 +80,31 @@ void config_getter::read_config(TFT_eSPI& tft)
                             current_status = load_status::waiting;
                             break;
                         case load_status::time:
-                            this->walktime_to_stop.push_back(std::stoi(buffer));
+                        {
+                            int temp_walktime = 0; // default value
+                            try
+                            {
+                                temp_walktime = std::stoi(buffer);
+                            }
+                            catch(const std::invalid_argument)
+                            {
+                                Serial.print("Could not parse given time: ");
+                                Serial.println(buffer.c_str());
+                            }
+                            catch(const std::out_of_range)
+                            {
+                                Serial.print("Could not parse given time - OutOfRange: ");
+                                Serial.println(buffer.c_str());
+                            }
+
+                            if (temp_walktime <= 0)
+                                this->walktime_to_stop.push_back(temp_walktime); // used as "minutesBefore=-3"
+                            else
+                                this->walktime_to_stop.push_back(-1*temp_walktime); // when positive, turn to negative
+
                             current_status = load_status::waiting;
                             break;
+                        }
                         case load_status::ssid:
                             this->ssid = buffer;
                             current_status = load_status::waiting;
@@ -119,6 +131,7 @@ void config_getter::read_config(TFT_eSPI& tft)
             if (current_char == '\n') // when on new_line char
                 line_comment = false;
         }
+        this->load_default_values();
     }
     else
     {
@@ -135,4 +148,19 @@ void config_getter::read_config(TFT_eSPI& tft)
     new_file.close();
     SD.end();
     return;
+}
+
+void config_getter::load_default_values()
+{
+    // if nickname or time to stop not given, pushing back default
+    std::size_t count_of_stops = this->stop_names.size();
+    if (this->walktime_to_stop.size() < count_of_stops)
+    {
+        this->walktime_to_stop.push_back(0);
+    }
+    if (this->stop_nicknames.size() < count_of_stops)
+    {
+        std::string unknown_name = "-----";
+        this->stop_nicknames.push_back(unknown_name);
+    }
 }

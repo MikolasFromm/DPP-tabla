@@ -1,0 +1,19 @@
+## API
+A: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa29sYXMuZnJvbW1AZ21haWwuY29tIiwiaWQiOjcxMCwibmFtZSI6bnVsbCwic3VybmFtZSI6bnVsbCwiaWF0IjoxNjYxNDMwODE0LCJleHAiOjExNjYxNDMwODE0LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiZTAzZjBkMWItYmE3OS00OGRiLThiOTItNDA3OTUzMDEyMWRmIn0.it9PdUqBO1YImkBjEHZ29vuKwesEhbYHTu49V8Gh2Dg"
+
+## Wifi
+W: "SSID"
+## Password
+P: "PSSWD"
+
+## SLÁNSKÁ
+Z: "ids=U236Z1P&ids=U236Z4P"
+N: "Slanska"
+T: "-2"
+
+## MALOSTRANSKÉ NÁMĚSTÍ
+Z: "names=Malostransk%C3%A9%20n%C3%A1m%C4%9Bst%C3%AD"
+N: "Mal.nam."
+
+## MALOSTRANSKÁ
+Z: "names=Malostransk%C3%A1"

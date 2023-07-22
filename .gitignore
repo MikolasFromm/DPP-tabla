@@ -1,8 +1,5 @@
 
-.vscode/c_cpp_properties.json
-.vscode/arduino.json
-.vscode/c_cpp_properties.json
-.vscode/
-src/setup.h
-main/setup.h
+main/esp32.svd
+main/debug.cfg
+main/debug_custom.json
 ArduinoOutput
