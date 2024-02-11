@@ -149,7 +149,15 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
                     display.drawString(this->nickname_buffer.c_str(), 160, 235, 1);
                 }
             }
+            else
+            {
+              Serial.print("Could not parse given timestamp: "); Serial.println(arrival_timestamp_predicted.c_str());
+            }
         }
+    }
+    else
+    {
+      Serial.println("Could not obtain current time");
     }
 }
 
