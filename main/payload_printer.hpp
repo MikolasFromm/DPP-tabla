@@ -23,6 +23,8 @@ class payload_printer
     std::string nickname_buffer = "";
     std::string line_buffer[DOWNLOAD_LIMIT];
     std::string line_orientation_buffer[DOWNLOAD_LIMIT];
+
+    bool status_point_state = false;
 };
 
 #endif

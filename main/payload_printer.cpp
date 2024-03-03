@@ -70,6 +70,7 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
 {
     if (tg.try_get_current_time())
     {
+        bool error_found = false;
         for (size_t i = 0; i < DOWNLOAD_LIMIT; i++)
         {
             JsonObject root = payload.doc[i];
@@ -152,7 +153,19 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
             else
             {
               Serial.print("Could not parse given timestamp: "); Serial.println(arrival_timestamp_predicted.c_str());
+              display.fillScreen(TFT_BLACK);
+              this->clean_buffers();
+              error_found = true;
             }
+        }
+        if (!error_found)
+        {
+          if (status_point_state)
+            display.fillRect(5,225,10,10,TFT_WHITE);
+          else
+            display.fillRect(5,225,10,10,TFT_GREEN);
+            
+          status_point_state = !status_point_state;  
         }
     }
     else
