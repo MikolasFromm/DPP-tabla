@@ -20,6 +20,10 @@ U8g2_for_TFT_eSPI u8f;
 bool deep_sleep = false;
 int last_stop_index = 0;
 
+// timing vars
+unsigned long last_download_time;
+unsigned long request_delay = 400;
+
 // support libs construct
 config_getter ConfigGetter;
 payload_parser PayloadParser;
@@ -92,7 +96,13 @@ void JsonRead(void * parameter)
       tft.fillScreen(TFT_BLACK);
       PayloadPrinter.clean_buffers();
     }
-    print_payload();
+    unsigned long current_time = millis();
+
+    if ((current_time - last_download_time) > request_delay)
+    {
+      print_payload();
+      last_download_time = current_time;
+    }
   }
 }
 
