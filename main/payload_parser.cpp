@@ -1,6 +1,6 @@
 #include "payload_parser.hpp"
 
-int payload_parser::input_data_check(std::string& stop_name, int walktime_to_stop)
+int payload_parser::input_data_check(std::string& stop_name, int walktime_to_stop, int display_index)
 {
   if (stop_name == "")
   {
@@ -10,11 +10,13 @@ int payload_parser::input_data_check(std::string& stop_name, int walktime_to_sto
   {
     return 12; // no api-key given
   }
+  else if (display_index > 1 || display_index < 0)
+  {
+    return 13; // invalid display index
+  }
   else
   {
-    std::ostringstream ss;
-    ss << DOWNLOAD_LIMIT;
-    this->serverConditions = stop_name + "&limit=" + ss.str() + "&minutesBefore=" + std::to_string(walktime_to_stop);
+    this->serverConditions = stop_name + "&limit=" + std::to_string(number_of_diplayed_rows+(display_index*number_of_diplayed_rows)) + "&minutesBefore=" + std::to_string(walktime_to_stop) + "&offset=" + std::to_string(display_index*number_of_diplayed_rows);
     this->serverPath = serverName + serverConditions;
     Serial.println(this->serverPath.c_str());
     return -1;

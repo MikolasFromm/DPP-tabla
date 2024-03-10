@@ -28,7 +28,7 @@ using SpiRamJsonDocument = BasicJsonDocument<SpiRamAllocator>;
 class payload_parser
 {
   public:
-    int input_data_check(std::string& stop_names, int walktime_to_stop);
+    int input_data_check(std::string& stop_names, int walktime_to_stop, int display_index);
     int deserialize_document();
     void load_api_from_config(std::string& api);
     void start_http_client();
@@ -51,6 +51,8 @@ class payload_parser
     const std::string serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
     std::string serverConditions = "";
     std::string serverPath = "";
+    const int number_of_diplayed_rows = 5;
+    int current_page = 0;
 
     // Golemio CERT
     std::string cert = "-----BEGIN CERTIFICATE-----\n" \

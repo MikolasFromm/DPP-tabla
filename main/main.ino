@@ -19,10 +19,13 @@ TFT_eSPI tft = TFT_eSPI();
 U8g2_for_TFT_eSPI u8f;
 bool deep_sleep = false;
 int last_stop_index = 0;
+int current_display_index = 0;
 
 // timing vars
 unsigned long last_download_time;
-unsigned long request_delay = 400;
+constexpr long request_delay = 5000;
+unsigned long last_display_change_time;
+constexpr long display_change_delay = 15000;
 
 // support libs construct
 config_getter ConfigGetter;
@@ -100,7 +103,9 @@ void JsonRead(void * parameter)
 
     if ((current_time - last_download_time) > request_delay)
     {
-      print_payload();
+      input_check();
+      current_display_index = change_diplay_index_on_demand(current_display_index, current_time, last_display_change_time);
+      print_payload(current_display_index);
       last_download_time = current_time;
     }
   }
@@ -158,7 +163,7 @@ void wifi_setup() // requires input_check to get SSID and PASSWORD
 void input_check() // possible to call repeatedly, always taking the current stop_name arguments
 {
   PayloadParser.flush_json_doc();
-  switch(PayloadParser.input_data_check(ConfigGetter.get_current_stop(), ConfigGetter.get_current_stop_walktime()))
+  switch(PayloadParser.input_data_check(ConfigGetter.get_current_stop(), ConfigGetter.get_current_stop_walktime(), current_display_index))
   // default -1 return value will be silently ignored, error values will be printed
   {
     case 10:
@@ -182,13 +187,38 @@ void input_check() // possible to call repeatedly, always taking the current sto
       u8f.print("Nebylo vloženo API!");
       delay(15000);
     }
+    case 13:
+    {
+      u8f.setFont(u8g2_font_helvB12_te);
+      u8f.setCursor(60, 130);
+      u8f.print("Neznámý index displeje!");
+      delay(15000);
+    }
   }
 }
 
-void print_payload()
+void print_payload(int page_index)
 {
   if (PayloadParser.deserialize_document() == 200)
   {
     PayloadPrinter.print_payload(tft, u8f, PayloadParser, TimeGetter, ConfigGetter.get_current_stop_nickname());
   }
+}
+
+int change_diplay_index_on_demand(int current_index, unsigned long current_time, unsigned long& last_change_time)
+{
+  if ((current_time - last_change_time) <= display_change_delay)
+    // if the time is still not up, dont change the index at all
+    return current_index;
+  else
+    // update the timer
+    last_change_time = current_time;
+
+  // only if time is up
+  if (current_index == 0)
+    return 1;
+  else if (current_index == 1)
+    return 0;
+  else // in case of an error
+    return 0;
 }
