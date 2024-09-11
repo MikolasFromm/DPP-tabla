@@ -25,7 +25,7 @@ int current_display_index = 0;
 unsigned long last_download_time;
 constexpr long request_delay = 5000;
 unsigned long last_display_change_time;
-constexpr long display_change_delay = 15000;
+constexpr long display_change_delay = 10000;
 
 // support libs construct
 config_getter ConfigGetter;

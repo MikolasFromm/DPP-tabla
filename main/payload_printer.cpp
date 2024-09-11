@@ -73,9 +73,9 @@ void payload_printer::print_payload(TFT_eSPI& display, U8g2_for_TFT_eSPI& adv_fo
         bool error_found = false;
         for (size_t i = 0; i < DOWNLOAD_LIMIT; i++)
         {
-            JsonObject root = payload.doc[i];
+            JsonObject root = payload.doc["departures"][i];
             std::string arrival_timestamp_predicted = root["arrival_timestamp"]["predicted"]; // "2023-02-11T22:39:00+01:00"
-            
+
             if (tg.try_parse_string_timestamp(arrival_timestamp_predicted))
             {
                 int time_diff = tg.get_timedelta_in_minutes();

@@ -48,7 +48,7 @@ class payload_parser
     std::string myAPI;
     std::string TimeZone = TIMEZONE;
     const std::string ContentType = CONTENT_TYPE; //CONTENT-SPECIFICATION
-    const std::string serverName = "https://api.golemio.cz/v2/departureboards/?" + TimeZone + "&"; //DATA-SERVER
+    const std::string serverName = "https://api.golemio.cz/v2/pid/departureboards/?" + TimeZone + "&"; //DATA-SERVER
     std::string serverConditions = "";
     std::string serverPath = "";
     const int number_of_diplayed_rows = 5;
